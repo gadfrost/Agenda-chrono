@@ -3,46 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chrono Planneur Pro - Multi-Décomptes</title>
+    <title>Chrono Planneur Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { --primary: #2563eb; --bg: #f8fafc; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; overflow-x: hidden; }
         
-        /* Navigation entre sections */
         section { display: none; padding: 20px; animation: fadeIn 0.3s; }
         section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Grille des chronos */
+        /* Grille avec dégradé de secours pour le hors-ligne */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
-        .timer-card-mini { background: white; border-radius: 15px; padding: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; background-size: cover; position: relative; overflow: hidden; height: 120px; display: flex; flex-direction: column; justify-content: center; color: white; }
+        .timer-card-mini { 
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            background-size: cover; border-radius: 15px; padding: 15px; text-align: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; position: relative; 
+            overflow: hidden; height: 120px; display: flex; flex-direction: column; justify-content: center; color: white; 
+        }
         .timer-card-mini::after { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.4); z-index: 1; }
         .timer-card-mini * { z-index: 2; position: relative; }
 
-        /* Mode Focus & Cercle */
-        .focus-container { text-align: center; min-height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; background-size: cover; background-position: center; border-radius: 20px; margin: 10px; position: relative; }
+        /* Mode Focus avec Cercle SVG */
+        .focus-container { 
+            text-align: center; min-height: 85vh; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            color: white; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); background-size: cover; 
+            background-position: center; border-radius: 20px; margin: 10px; position: relative; 
+        }
         .focus-container::after { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); border-radius: 20px; }
         .focus-content { z-index: 2; position: relative; width: 100%; }
         
         .progress-ring { transform: rotate(-90deg); }
-        .progress-ring__circle { transition: stroke-dashoffset 0.35s; transform-origin: 50% 50%; stroke: var(--primary); }
+        .progress-ring__circle { transition: stroke-dashoffset 0.35s; transform-origin: 50% 50%; }
 
-        /* Formulaire et Galerie */
-        .form-card { background: white; padding: 25px; border-radius: 20px; max-width: 500px; margin: auto; }
-        .background-gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
-        .thumb { height: 50px; border-radius: 8px; cursor: pointer; border: 3px solid transparent; background-size: cover; }
+        /* Formulaire */
+        .form-card { background: white; padding: 25px; border-radius: 20px; max-width: 500px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .background-gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0; }
+        .thumb { height: 45px; border-radius: 8px; cursor: pointer; border: 3px solid transparent; background-size: cover; background-color: #ddd; }
         .thumb.active { border-color: var(--primary); }
 
-        /* Pop-up Alarme */
-        .modal { display: none; position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; text-align: center; color: white; }
-        .bounce { animation: bounce 0.5s infinite alternate; font-size: 50px; color: #fbbf24; }
+        /* Modale Alarme */
+        .modal { display: none; position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; text-align: center; color: white; }
+        .bounce { animation: bounce 0.5s infinite alternate; font-size: 60px; color: #fbbf24; }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
         
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
+        input, select, .btn-main { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 16px; }
         .btn-main { background: var(--primary); color: white; font-weight: bold; border: none; cursor: pointer; }
-        .floating-add { position: fixed; bottom: 80px; right: 20px; background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 99; }
+        .floating-add { position: fixed; bottom: 30px; right: 20px; background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); cursor: pointer; z-index: 99; }
     </style>
 </head>
 <body>
@@ -55,52 +64,86 @@
 
     <section id="sec-form">
         <div class="form-card">
-            <button onclick="showSection('sec-grid')" style="width: auto; background: none; border: none; color: var(--primary); cursor: pointer;"><i class="fas fa-arrow-left"></i> Retour</button>
+            <button onclick="showSection('sec-grid')" style="background:none; border:none; color:var(--primary); cursor:pointer;"><i class="fas fa-arrow-left"></i> Retour</button>
             <h2>Nouveau Décompte</h2>
-            <input type="text" id="task-name" placeholder="Nom de la tâche...">
-            <input type="datetime-local" id="task-date">
-            <p>Choisir un fond :</p>
-            <div class="background-gallery" id="gallery"></div>
-            <button class="btn-main" onclick="addTimer()">Créer le chrono</button>
+            <div class="input-group">
+                <label>Nom de la tâche</label>
+                <input type="text" id="task-name" placeholder="Ex: Prendre mes vitamines">
+            </div>
+            <div class="input-group">
+                <label>Date et Heure</label>
+                <input type="datetime-local" id="task-date">
+            </div>
+            <div class="input-group">
+                <label>Répétition</label>
+                <select id="repeat-select">
+                    <option value="none">Une seule fois</option>
+                    <option value="daily">Chaque jour</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Sonnerie</label>
+                <div style="display: flex; gap: 5px;">
+                    <select id="sound-select" style="flex-grow:1;">
+                        <option value="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">Bip Simple</option>
+                        <option value="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">Digital</option>
+                        <option value="https://actions.google.com/sounds/v1/foley/door_bell.ogg">Sonnette</option>
+                    </select>
+                    <button onclick="testSound()" style="width:50px; border-radius:10px; border:none; background:#cbd5e1;"><i class="fas fa-play"></i></button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Fond d'écran</label>
+                <div class="background-gallery" id="gallery"></div>
+            </div>
+            <button class="btn-main" onclick="addTimer()">Démarrer</button>
         </div>
     </section>
 
     <section id="sec-focus">
         <div id="focus-area" class="focus-container">
             <div class="focus-content">
-                <button onclick="showSection('sec-grid')" style="position: absolute; top: -50px; left: 20px; background: rgba(255,255,255,0.2); color: white; border: none; padding: 10px; border-radius: 50%; cursor: pointer;"><i class="fas fa-times"></i></button>
+                <button onclick="showSection('sec-grid')" style="position:absolute; top:-40px; left:20px; background:rgba(255,255,255,0.2); border:none; color:white; padding:10px; border-radius:50%;"><i class="fas fa-times"></i></button>
                 <h2 id="focus-task-name">Tâche</h2>
-                
                 <svg class="progress-ring" width="240" height="240">
-                    <circle class="progress-ring__circle" stroke-width="8" stroke="rgba(255,255,255,0.2)" fill="transparent" r="110" cx="120" cy="120"/>
-                    <circle id="progress-bar" class="progress-ring__circle" stroke-width="8" stroke="white" fill="transparent" r="110" cx="120" cy="120" stroke-dasharray="691.15" stroke-dashoffset="691.15"/>
+                    <circle stroke="rgba(255,255,255,0.2)" stroke-width="8" fill="transparent" r="110" cx="120" cy="120"/>
+                    <circle id="progress-bar" stroke="white" stroke-width="8" fill="transparent" r="110" cx="120" cy="120" stroke-dasharray="691.15" stroke-dashoffset="691.15" stroke-linecap="round"/>
                 </svg>
-                
-                <div id="focus-time" style="font-size: 45px; font-weight: bold; margin-top: -145px; margin-bottom: 100px;">00:00:00</div>
-                
-                <button class="btn-main" onclick="shareTimer()" style="width: 80%; margin-top: 20px;"><i class="fab fa-whatsapp"></i> Partager l'état</button>
+                <div id="focus-time" style="font-size: 48px; font-weight: bold; margin-top: -148px; margin-bottom: 100px;">00:00:00</div>
+                <button class="btn-main" onclick="shareTimer()" style="width:80%; margin-top:30px;"><i class="fab fa-whatsapp"></i> Partager mon statut</button>
             </div>
         </div>
     </section>
 
     <div id="alarm-modal" class="modal">
         <div>
-            <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 20px;">
+            <div style="display:flex; gap:20px; justify-content:center; margin-bottom:20px;">
                 <i class="fas fa-thumbs-up bounce"></i>
                 <i class="fas fa-thumbs-up bounce"></i>
             </div>
-            <h1 id="alarm-task">C'est terminé !</h1>
-            <p>Votre décompte est arrivé à zéro.</p>
-            <button class="btn-main" onclick="closeAlarm()" style="width: 200px;">Bravo !</button>
+            <h1 id="alarm-task">C'est fini !</h1>
+            <p>Le temps est écoulé pour cette tâche.</p>
+            <button class="btn-main" onclick="closeAlarm()" style="width:200px;">OK, J'ai vu !</button>
         </div>
     </div>
 
-    <audio id="alarm-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+    <audio id="alarm-sound"></audio>
 
     <script>
         let timers = JSON.parse(localStorage.getItem('timers')) || [];
-        const images = ["https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400", "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400", "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400", "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400"];
+        const images = [
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400",
+            "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400",
+            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400",
+            "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400"
+        ];
         let selectedImg = images[0];
+        let currentFocusId = null;
+
+        // Notifications
+        if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
 
         function showSection(id) {
             document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
@@ -124,14 +167,23 @@
             gal.firstChild.classList.add('active');
         }
 
+        function testSound() {
+            const audio = document.getElementById('alarm-sound');
+            audio.src = document.getElementById('sound-select').value;
+            audio.play();
+        }
+
         function addTimer() {
-            const name = document.getElementById('task-name').value || "Sans titre";
-            const date = new Date(document.getElementById('task-date').value).getTime();
-            if(isNaN(date)) return alert("Date invalide");
-            
-            const newT = { id: Date.now(), name, target: date, bg: selectedImg, start: Date.now() };
+            const name = document.getElementById('task-name').value || "Tâche";
+            const target = new Date(document.getElementById('task-date').value).getTime();
+            const repeat = document.getElementById('repeat-select').value;
+            const sound = document.getElementById('sound-select').value;
+
+            if(isNaN(target)) return alert("Veuillez choisir une heure valide.");
+
+            const newT = { id: Date.now(), name, target, bg: selectedImg, start: Date.now(), sound, repeat };
             timers.push(newT);
-            localStorage.setItem('timers', JSON.stringify(timers));
+            save();
             showSection('sec-grid');
         }
 
@@ -142,35 +194,36 @@
                 const div = document.createElement('div');
                 div.className = 'timer-card-mini';
                 div.style.backgroundImage = `url(${t.bg})`;
-                div.innerHTML = `<span>${t.name}</span><small id="mini-${t.id}">--:--</small>`;
-                div.onclick = () => openFocus(t);
+                div.innerHTML = `<strong>${t.name}</strong><small id="mini-${t.id}">--:--</small>`;
+                div.onclick = () => { showSection('sec-focus'); openFocus(t); };
                 grid.appendChild(div);
             });
         }
 
         function openFocus(t) {
-            showSection('sec-focus');
+            currentFocusId = t.id;
             document.getElementById('focus-area').style.backgroundImage = `url(${t.bg})`;
             document.getElementById('focus-task-name').innerText = t.name;
-            currentFocusId = t.id;
         }
 
-        let currentFocusId = null;
+        function save() { localStorage.setItem('timers', JSON.stringify(timers)); }
+
         setInterval(() => {
             const now = Date.now();
-            timers.forEach(t => {
+            timers.forEach((t, index) => {
                 const diff = t.target - now;
-                const display = diff > 0 ? formatTime(diff) : "FINI";
-                
+                if (diff <= 0 && diff > -2000) triggerAlarm(t, index);
+
+                const display = diff > 0 ? formatTime(diff) : "TERMINÉ";
                 const mini = document.getElementById(`mini-${t.id}`);
                 if(mini) mini.innerText = display;
 
                 if(currentFocusId === t.id) {
                     document.getElementById('focus-time').innerText = display;
-                    updateCircle(t, diff);
+                    const total = t.target - t.start;
+                    const offset = 691.15 * (1 - (diff / total));
+                    document.getElementById('progress-bar').style.strokeDashoffset = diff > 0 ? offset : 0;
                 }
-
-                if(diff <= 0 && diff > -2000) triggerAlarm(t.name);
             });
         }, 1000);
 
@@ -181,31 +234,33 @@
             return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
-        function updateCircle(t, diff) {
-            const total = t.target - t.start;
-            const progress = diff / total;
-            const offset = 691.15 * (1 - progress);
-            document.getElementById('progress-bar').style.strokeDashoffset = offset;
-        }
+        function triggerAlarm(t, index) {
+            const audio = document.getElementById('alarm-sound');
+            audio.src = t.sound;
+            audio.play();
 
-        function triggerAlarm(name) {
-            document.getElementById('alarm-task').innerText = name;
+            if (Notification.permission === "granted") {
+                new Notification("Temps écoulé !", { body: t.name });
+            }
+
+            document.getElementById('alarm-task').innerText = t.name;
             document.getElementById('alarm-modal').style.display = 'flex';
-            document.getElementById('alarm-sound').play();
+
+            if (t.repeat === 'daily') {
+                timers[index].target += 86400000;
+                timers[index].start = Date.now();
+                save();
+            }
         }
 
-        function closeAlarm() {
-            document.getElementById('alarm-modal').style.display = 'none';
-        }
+        function closeAlarm() { document.getElementById('alarm-modal').style.display = 'none'; }
 
         async function shareTimer() {
-            const area = document.getElementById('focus-area');
-            const canvas = await html2canvas(area, { useCORS: true });
-            const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-            const file = new File([blob], "mon-chrono.png", {type: "image/png"});
-            if(navigator.share) {
-                navigator.share({ files: [file], title: "Mon Chrono Pro", text: "Regarde où j'en suis !" });
-            }
+            const canvas = await html2canvas(document.getElementById('focus-area'), { useCORS: true });
+            canvas.toBlob(blob => {
+                const file = new File([blob], "chrono.png", {type: "image/png"});
+                if(navigator.share) navigator.share({ files: [file], title: "Mon Chrono" });
+            });
         }
 
         window.onload = () => { initGallery(); renderGrid(); };
