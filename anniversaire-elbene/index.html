@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joyeux Anniversaire ELBENE ! ✨</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600;800&display=swap');
+
+        :root {
+            --primary: #ff758c;
+            --secondary: #ff7eb3;
+            --accent: #feb47b;
+            --dark: #2d3436;
+            --glass: rgba(255, 255, 255, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: #000;
+            overflow: hidden;
+            color: var(--dark);
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            z-index: -1;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        /* Intro Button Style */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: all 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        .intro-screen.hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .pulse-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 0 0 0 rgba(255, 117, 140, 0.7);
+            animation: pulse 2s infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+
+        .pulse-btn:hover {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 117, 140, 0.7); }
+            70% { box-shadow: 0 0 0 30px rgba(255, 117, 140, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 117, 140, 0); }
+        }
+
+        /* Card Style */
+        .card {
+            width: 90%;
+            max-width: 450px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 1s ease;
+        }
+
+        .card.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .cake-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            background: linear-gradient(to right, #ff758c, #ff7eb3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .highlight {
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .floating-elements i {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 25px;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            h1 { font-size: 2.8rem; }
+            .card { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bg-canvas"></div>
+
+    <div class="intro-screen" id="intro">
+        <h2 style="margin-bottom: 30px; font-weight: 300; color: #666;">Un message spécial t'attend...</h2>
+        <button class="pulse-btn" onclick="startCelebration()">
+            <i class="fas fa-gift"></i>
+        </button>
+        <p style="margin-top: 20px; color: #888; font-size: 0.9rem;">Clique sur le cadeau</p>
+    </div>
+
+    <div class="container">
+        <div class="card" id="mainCard">
+            <div class="cake-icon" id="cake">🎂</div>
+            <h1 id="title">Joyeux Anniversaire ELBENE !</h1>
+            <div class="message">
+                <p>Aujourd'hui est un jour spécial car c'est le <span class="highlight">TIEN</span> ! ✨</p>
+                <p style="margin-top: 10px;">Que cette nouvelle année soit remplie de moments magiques, de rires éclatants et de rêves qui se réalisent.</p>
+                <p style="margin-top: 10px;">Tu es une personne exceptionnelle et tu mérites tout le bonheur du monde.</p>
+            </div>
+            <a href="../index.html" class="btn-back">Retour à l'accueil</a>
+        </div>
+    </div>
+
+    <div class="floating-elements" id="floaters"></div>
+
+    <script>
+        // Create floating elements
+        const floatersContainer = document.getElementById('floaters');
+        const icons = ['fa-heart', 'fa-star', 'fa-cake-candles', 'fa-gift', 'fa-balloon'];
+        
+        for (let i = 0; i < 20; i++) {
+            const icon = document.createElement('i');
+            icon.className = `fas ${icons[Math.floor(Math.random() * icons.length)]}`;
+            icon.style.left = Math.random() * 100 + 'vw';
+            icon.style.top = Math.random() * 100 + 'vh';
+            icon.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            floatersContainer.appendChild(icon);
+            
+            anime({
+                targets: icon,
+                translateY: [0, -100],
+                translateX: () => anime.random(-20, 20),
+                rotate: () => anime.random(0, 360),
+                opacity: [0, 0.6, 0],
+                duration: () => anime.random(3000, 6000),
+                delay: () => anime.random(0, 5000),
+                loop: true,
+                easing: 'linear'
+            });
+        }
+
+        function startCelebration() {
+            // Hide intro
+            document.getElementById('intro').classList.add('hidden');
+            
+            // Show card with delay
+            setTimeout(() => {
+                document.getElementById('mainCard').classList.add('visible');
+                
+                // Animate cake
+                anime({
+                    targets: '#cake',
+                    scale: [0, 1.2, 1],
+                    rotate: '1turn',
+                    duration: 1500,
+                    easing: 'easeOutElastic(1, .5)'
+                });
+
+                // Animate title
+                anime({
+                    targets: '#title',
+                    translateY: [20, 0],
+                    opacity: [0, 1],
+                    delay: 500,
+                    duration: 1000
+                });
+
+                launchConfetti();
+            }, 800);
+        }
+
+        function launchConfetti() {
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } 
+                }));
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } 
+                }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
