@@ -15,7 +15,7 @@
             --secondary: #ff7eb3;
             --accent: #feb47b;
             --dark: #2d3436;
-            --glass: rgba(255, 255, 255, 0.85);
+            --glass: rgba(255, 255, 255, 0.95);
         }
 
         * {
@@ -39,7 +39,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            background: linear-gradient(135deg, #ffd6e8 0%, #ffb3d9 50%, #ff9ec5 100%);
             z-index: -1;
         }
 
@@ -49,6 +49,7 @@
             justify-content: center;
             align-items: center;
             perspective: 1000px;
+            padding: 20px;
         }
 
         /* Intro Button Style */
@@ -58,7 +59,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -73,6 +74,13 @@
             pointer-events: none;
         }
 
+        .intro-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
         .pulse-btn {
             width: 120px;
             height: 120px;
@@ -80,7 +88,7 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
             color: white;
-            font-size: 1.5rem;
+            font-size: 2rem;
             cursor: pointer;
             box-shadow: 0 0 0 0 rgba(255, 117, 140, 0.7);
             animation: pulse 2s infinite;
@@ -94,6 +102,10 @@
             transform: scale(1.1);
         }
 
+        .pulse-btn:active {
+            transform: scale(0.95);
+        }
+
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 117, 140, 0.7); }
             70% { box-shadow: 0 0 0 30px rgba(255, 117, 140, 0); }
@@ -102,15 +114,15 @@
 
         /* Card Style */
         .card {
-            width: 90%;
-            max-width: 450px;
+            width: 100%;
+            max-width: 500px;
             background: var(--glass);
             backdrop-filter: blur(15px);
             border-radius: 30px;
-            padding: 40px;
+            padding: 50px 40px 40px;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             transform: translateY(50px);
             opacity: 0;
             transition: all 1s ease;
@@ -122,25 +134,36 @@
         }
 
         .cake-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
+            font-size: 5rem;
+            margin-bottom: 25px;
             display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         h1 {
             font-family: 'Dancing Script', cursive;
-            font-size: 3.5rem;
+            font-size: 3.2rem;
             background: linear-gradient(to right, #ff758c, #ff7eb3);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            line-height: 1.2;
         }
 
         .message {
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1rem;
+            line-height: 1.7;
             color: #555;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
+        }
+
+        .message p {
+            margin: 12px 0;
         }
 
         .highlight {
@@ -150,33 +173,42 @@
 
         .floating-elements i {
             position: absolute;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.5);
             pointer-events: none;
             z-index: -1;
         }
 
         .btn-back {
             display: inline-block;
-            margin-top: 20px;
-            padding: 10px 25px;
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
+            padding: 14px 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 117, 140, 0.3);
         }
 
         .btn-back:hover {
-            background: var(--primary);
-            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(255, 117, 140, 0.4);
+        }
+
+        .btn-back:active {
+            transform: translateY(-1px);
         }
 
         /* Mobile Adjustments */
         @media (max-width: 480px) {
-            h1 { font-size: 2.8rem; }
-            .card { padding: 30px 20px; }
+            h1 { font-size: 2.5rem; }
+            .cake-icon { font-size: 4rem; }
+            .card { padding: 40px 25px 30px; }
+            .message { font-size: 0.95rem; }
+            .btn-back { padding: 12px 30px; font-size: 0.95rem; }
         }
     </style>
 </head>
@@ -185,23 +217,23 @@
     <div id="bg-canvas"></div>
 
     <div class="intro-screen" id="intro">
-        <h2 style="margin-bottom: 30px; font-weight: 300; color: #666;">Un message spécial t'attend...</h2>
+        <p class="intro-text">Un message spécial t'attend...</p>
         <button class="pulse-btn" onclick="startCelebration()">
             <i class="fas fa-gift"></i>
         </button>
-        <p style="margin-top: 20px; color: #888; font-size: 0.9rem;">Clique sur le cadeau</p>
+        <p style="margin-top: 20px; color: #999; font-size: 0.9rem;">Clique sur le cadeau</p>
     </div>
 
     <div class="container">
         <div class="card" id="mainCard">
             <div class="cake-icon" id="cake">🎂</div>
-            <h1 id="title">Joyeux Anniversaire ELBENE !</h1>
+            <h1 id="title">Joyeux<br>Anniversaire<br><span style="background: linear-gradient(to right, #ff758c, #ff7eb3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ELBENE</span> !</h1>
             <div class="message">
                 <p>Aujourd'hui est un jour spécial car c'est le <span class="highlight">TIEN</span> ! ✨</p>
-                <p style="margin-top: 10px;">Que cette nouvelle année soit remplie de moments magiques, de rires éclatants et de rêves qui se réalisent.</p>
-                <p style="margin-top: 10px;">Tu es une personne exceptionnelle et tu mérites tout le bonheur du monde.</p>
+                <p>Que cette nouvelle année soit remplie de moments magiques, de rires éclatants et de rêves qui se réalisent.</p>
+                <p>Tu es une personne exceptionnelle et tu mérites tout le bonheur du monde. 🌟</p>
             </div>
-            <a href="../index.html" class="btn-back">Retour à l'accueil</a>
+            <button class="btn-back" onclick="location.reload()">Retour à l'accueil</button>
         </div>
     </div>
 
@@ -225,7 +257,7 @@
                 translateY: [0, -100],
                 translateX: () => anime.random(-20, 20),
                 rotate: () => anime.random(0, 360),
-                opacity: [0, 0.6, 0],
+                opacity: [0, 0.5, 0],
                 duration: () => anime.random(3000, 6000),
                 delay: () => anime.random(0, 5000),
                 loop: true,
