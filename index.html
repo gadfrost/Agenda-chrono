@@ -1,1 +1,634 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="theme-color" content="#87CEEB"><link rel="manifest" href="./manifest.json"><title>Stella</title></head><body><h1>Stella Assistant</h1><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js");}</script></body></html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#87CEEB">
+    <meta name="description" content="Stella - Votre assistant personnel frais et moderne pour gérer vos tâches et vos notes.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Stella">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1164/1164620.png">
+    <title>Stella - Votre Assistant Personnel</title>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://cdn-icons-png.flaticon.com/512/1164/1164620.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #87CEEB; /* Sky Blue */
+            --primary-dark: #5f9ea0;
+            --primary-light: #e0f7fa;
+            --secondary: #b0e0e6;
+            --accent: #4682b4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #f0f8ff; /* Alice Blue */
+            --white: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            color: var(--accent);
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: var(--white);
+            padding: 10px;
+            justify-content: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn.active {
+            background: var(--primary-light);
+            color: var(--accent);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        section {
+            display: none;
+        }
+
+        section.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Module Agenda */
+        .agenda-input-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-add:hover {
+            background: var(--accent);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-item {
+            background: var(--white);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow-sm);
+            border-left: 5px solid var(--primary);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            border-left-color: var(--text-light);
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+        }
+
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-text {
+            font-weight: 600;
+            display: block;
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: var(--danger);
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        /* Module Notes */
+        .notes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .note-editor {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-md);
+        }
+
+        #note-content {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.6;
+            outline: none;
+            margin-bottom: 15px;
+            overflow-y: auto;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 15px;
+        }
+
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-picker-container label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        #highlight-color {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .btn-tool {
+            padding: 8px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-tool:hover {
+            background: var(--primary-light);
+        }
+
+        .notes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .note-card {
+            background: var(--white);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            max-height: 200px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .note-card-content {
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .note-card-date {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 10px;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            main { padding: 10px; }
+            .header h1 { font-size: 20px; }
+            .nav-btn { padding: 8px 12px; font-size: 14px; }
+        }
+
+        /* Highlight Style */
+        .highlight {
+            border-radius: 3px;
+            padding: 1px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1><i class="fas fa-star"></i> STELLA</h1>
+        <p>Votre assistant quotidien frais et moderne</p>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-btn active" onclick="switchTab('agenda')"><i class="fas fa-calendar-alt"></i> Agenda</button>
+        <button class="nav-btn" onclick="switchTab('notes')"><i class="fas fa-sticky-note"></i> Notes</button>
+    </nav>
+
+    <main>
+        <!-- Section Agenda -->
+        <section id="sec-agenda" class="active">
+            <div class="agenda-input-card">
+                <div class="input-group">
+                    <label>Nouvelle tâche</label>
+                    <input type="text" id="task-text" placeholder="Que devez-vous faire ?">
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>Date</label>
+                        <input type="date" id="task-date">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Heure</label>
+                        <input type="time" id="task-time">
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addTask()">Ajouter à l'agenda</button>
+            </div>
+
+            <div id="task-list" class="task-list">
+                <!-- Les tâches apparaîtront ici -->
+            </div>
+        </section>
+
+        <!-- Section Notes -->
+        <section id="sec-notes">
+            <div class="notes-container">
+                <div class="note-editor">
+                    <div class="toolbar">
+                        <div class="color-picker-container">
+                            <label>Surligneur :</label>
+                            <input type="color" id="highlight-color" value="#87CEEB">
+                        </div>
+                        <button class="btn-tool" onclick="applyHighlight()">
+                            <i class="fas fa-highlighter"></i> Surligner la sélection
+                        </button>
+                        <button class="btn-tool" onclick="clearNote()">
+                            <i class="fas fa-eraser"></i> Effacer
+                        </button>
+                        <button class="btn-tool" onclick="saveNote()" style="margin-left: auto; background: var(--primary); color: white;">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                    <div id="note-content" contenteditable="true" placeholder="Écrivez votre note ici..."></div>
+                </div>
+
+                <h3 style="color: var(--accent); margin-top: 10px;">Mes Notes Enregistrées</h3>
+                <div id="notes-list" class="notes-list">
+                    <!-- Les notes apparaîtront ici -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- Service Worker Registration (PWA) ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then((registration) => {
+                console.log('Service Worker enregistre avec succes:', registration);
+            }).catch((error) => {
+                console.log('Erreur enregistrement Service Worker:', error);
+            });
+        }
+
+        // --- PWA Install Prompt ---
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('Application peut etre installee');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('Application installee avec succes');
+            deferredPrompt = null;
+        });
+
+        // --- Gestion des Onglets ---
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+            
+            if (tab === 'agenda') {
+                document.querySelector('.nav-btn:nth-child(1)').classList.add('active');
+                document.getElementById('sec-agenda').classList.add('active');
+            } else {
+                document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
+                document.getElementById('sec-notes').classList.add('active');
+                renderNotes();
+            }
+        }
+
+        // --- Module Agenda ---
+        let tasks = JSON.parse(localStorage.getItem('stella_tasks')) || [];
+
+        function addTask() {
+            const text = document.getElementById('task-text').value;
+            const date = document.getElementById('task-date').value;
+            const time = document.getElementById('task-time').value;
+
+            if (!text || !date || !time) {
+                alert("Veuillez remplir tous les champs.");
+                return;
+            }
+
+            const newTask = {
+                id: Date.now(),
+                text: text,
+                date: date,
+                time: time,
+                completed: false
+            };
+
+            tasks.push(newTask);
+            saveTasks();
+            renderTasks();
+            
+            // Reset fields
+            document.getElementById('task-text').value = '';
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? {...t, completed: !t.completed} : t);
+            saveTasks();
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+            renderTasks();
+        }
+
+        function saveTasks() {
+            localStorage.setItem('stella_tasks', JSON.stringify(tasks));
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('task-list');
+            list.innerHTML = '';
+
+            if (tasks.length === 0) {
+                list.innerHTML = '<p style="text-align:center; color:var(--text-light); padding:20px;">Aucune tâche prévue.</p>';
+                return;
+            }
+
+            // Sort by date and time
+            const sortedTasks = [...tasks].sort((a, b) => {
+                return new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time);
+            });
+
+            sortedTasks.forEach(task => {
+                const div = document.createElement('div');
+                div.className = `task-item ${task.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    <div class="task-info">
+                        <span class="task-text">${task.text}</span>
+                        <span class="task-time"><i class="far fa-clock"></i> ${formatDate(task.date)} à ${task.time}</span>
+                    </div>
+                    <button class="btn-delete" onclick="deleteTask(${task.id})"><i class="fas fa-trash-alt"></i></button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function formatDate(dateStr) {
+            const options = { day: 'numeric', month: 'long' };
+            return new Date(dateStr).toLocaleDateString('fr-FR', options);
+        }
+
+        // --- Module Notes ---
+        let notes = JSON.parse(localStorage.getItem('stella_notes')) || [];
+
+        function applyHighlight() {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            const color = document.getElementById('highlight-color').value;
+            
+            // Convert hex to rgba with 35% opacity for translucency
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            const rgba = `rgba(${r}, ${g}, ${b}, 0.35)`;
+
+            const span = document.createElement('span');
+            span.className = 'highlight';
+            span.style.backgroundColor = rgba;
+            
+            try {
+                range.surroundContents(span);
+            } catch (e) {
+                // Fallback for complex selections
+                const content = range.extractContents();
+                span.appendChild(content);
+                range.insertNode(span);
+            }
+            
+            selection.removeAllRanges();
+        }
+
+        function clearNote() {
+            if (confirm("Effacer le contenu actuel ?")) {
+                document.getElementById('note-content').innerHTML = '';
+            }
+        }
+
+        function saveNote() {
+            const content = document.getElementById('note-content').innerHTML;
+            if (!content.trim() || content === '<br>') {
+                alert("La note est vide.");
+                return;
+            }
+
+            const newNote = {
+                id: Date.now(),
+                content: content,
+                date: new Date().toLocaleString('fr-FR')
+            };
+
+            notes.unshift(newNote);
+            localStorage.setItem('stella_notes', JSON.stringify(notes));
+            alert("Note enregistrée !");
+            document.getElementById('note-content').innerHTML = '';
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('notes-list');
+            list.innerHTML = '';
+
+            notes.forEach(note => {
+                const div = document.createElement('div');
+                div.className = 'note-card';
+                div.onclick = () => loadNote(note.id);
+                div.innerHTML = `
+                    <div class="note-card-content">${note.content}</div>
+                    <span class="note-card-date">${note.date}</span>
+                    <button onclick="deleteNote(event, ${note.id})" style="position:absolute; top:10px; right:10px; border:none; background:none; color:var(--danger); cursor:pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function loadNote(id) {
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                document.getElementById('note-content').innerHTML = note.content;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function deleteNote(event, id) {
+            event.stopPropagation();
+            if (confirm("Supprimer cette note ?")) {
+                notes = notes.filter(n => n.id !== id);
+                localStorage.setItem('stella_notes', JSON.stringify(notes));
+                renderNotes();
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTasks();
+            // Set default date to today
+            document.getElementById('task-date').valueAsDate = new Date();
+        });
+    </script>
+</body>
+</html>
