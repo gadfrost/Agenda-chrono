@@ -1,7 +1,7 @@
 {
   "name": "Stella Assistant",
   "short_name": "Stella",
-  "description": "Assistant intelligent pour vos notes et tâches",
+  "description": "Votre assistant personnel pour gérer vos tâches et notes.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f0f8ff",
