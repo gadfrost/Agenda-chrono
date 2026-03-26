@@ -4,138 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#87CEEB">
-    <title>Stella - Assistant</title>
+    <title>Stella - Assistant Intelligent</title>
     
     <script src="https://pl28725493.profitablecpmratenetwork.com/92/24/15/922415557c0b2e238f75d831946ca7cc.js"></script>
     
     <link rel="manifest" href="./manifest.json">
-    <link rel="apple-touch-icon" href="icon.png">
-    <link rel="icon" type="image/png" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            --primary: #87CEEB; --bg: #f8fafc; --white: #ffffff;
-            --text-dark: #1e293b; --text-light: #64748b; --border: #e2e8f0;
-            --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --primary: #87CEEB; --bg: #f0f4f8; --card: #ffffff;
+            --text: #2c3e50; --border: #dcdde1; --shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         body.dark-mode {
-            --bg: #0f172a; --white: #1e293b; --text-dark: #f8fafc;
-            --text-light: #94a3b8; --border: #334155;
+            --bg: #1a1a2e; --card: #16213e; --text: #e9ecef; --border: #2d3436;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text-dark); min-height: 100vh; padding-bottom: 80px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--text); transition: 0.3s; padding-bottom: 70px; }
+
+        /* Header & Nav */
+        .header { background: var(--card); padding: 20px; text-align: center; border-bottom: 2px solid var(--primary); position: relative; }
+        .theme-toggle { position: absolute; right: 15px; top: 20px; border: none; background: none; font-size: 20px; color: var(--primary); cursor: pointer; }
         
-        .header { background: var(--white); padding: 20px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
-        .theme-toggle { position: absolute; right: 20px; top: 20px; cursor: pointer; font-size: 20px; border: none; background: none; color: var(--text-light); }
+        .tabs { display: flex; gap: 10px; padding: 15px; max-width: 500px; margin: 0 auto; }
+        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 12px; background: var(--card); color: var(--text); font-weight: bold; cursor: pointer; box-shadow: var(--shadow); }
+        .tab-btn.active { background: var(--primary); color: white; }
 
-        .nav-tabs { display: flex; background: var(--white); margin: 15px; padding: 5px; border-radius: 12px; box-shadow: var(--shadow); }
-        .nav-btn { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-light); font-weight: bold; border-radius: 10px; cursor: pointer; }
-        .nav-btn.active { background: var(--primary); color: white; }
+        /* Contenu */
+        main { max-width: 600px; margin: 0 auto; padding: 0 15px; }
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        main { padding: 0 15px; max-width: 600px; margin: 0 auto; }
-        section { display: none; }
-        section.active { display: block; }
+        /* Cartes & Inputs */
+        .card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); }
+        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
 
-        .card { background: var(--white); padding: 15px; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 15px; border: 1px solid var(--border); }
-        input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text-dark); margin-bottom: 10px; }
-        
-        /* Zone de saisie RICH TEXT (Pour la couleur) */
+        /* ÉDITEUR DE NOTES */
+        .toolbar { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
+        .tool-btn { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); cursor: pointer; }
         #note-editor { 
-            min-height: 200px; padding: 15px; border: 2px dashed var(--primary); 
-            border-radius: 10px; background: var(--bg); color: var(--text-dark);
-            margin-bottom: 15px; outline: none; overflow-y: auto;
+            min-height: 250px; border: 1px solid var(--border); border-radius: 10px; padding: 15px; 
+            background: var(--card); overflow-y: auto; outline: none; margin-bottom: 15px;
         }
 
-        .toolbar { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-        .tool-btn { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--white); cursor: pointer; color: var(--text-dark); }
+        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer; }
 
-        .btn-save { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        /* Listes */
+        .note-item { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid var(--primary); position: relative; }
+        .note-preview { max-height: 60px; overflow: hidden; font-size: 14px; margin-bottom: 10px; }
+        .note-footer { display: flex; justify-content: space-between; font-size: 11px; color: #7f8c8d; }
+        .actions { display: flex; gap: 15px; margin-top: 10px; }
+        .actions i { cursor: pointer; font-size: 18px; }
 
-        .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .note-item { background: var(--white); padding: 12px; border-radius: 12px; border-top: 4px solid var(--primary); height: 140px; overflow: hidden; position: relative; box-shadow: var(--shadow); }
-
-        /* BANNIÈRE D'INSTALLATION (LA BARRE BLEUE) */
+        /* INSTALLATION BAR */
         #install-bar {
             display: none; position: fixed; bottom: 0; left: 0; right: 0; 
             background: var(--primary); color: white; padding: 15px;
-            z-index: 10000; justify-content: space-between; align-items: center;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            z-index: 1000; justify-content: space-between; align-items: center;
         }
-        #install-bar button { background: white; color: var(--primary); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header class="header">
         <h1 style="color: var(--primary);">STELLA</h1>
+        <p style="font-size: 12px; opacity: 0.8;">Accueil - Votre assistant intelligent</p>
         <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon"><i class="fas fa-moon"></i></button>
     </header>
 
-    <nav class="nav-tabs">
-        <button class="nav-btn active" onclick="switchTab('agenda')">Agenda</button>
-        <button class="nav-btn" onclick="switchTab('notes')">Notes</button>
+    <nav class="tabs">
+        <button class="tab-btn active" id="tab-agenda" onclick="showView('agenda')"><i class="fas fa-calendar"></i> Agenda</button>
+        <button class="tab-btn" id="tab-notes" onclick="showView('notes')"><i class="fas fa-sticky-note"></i> Notes</button>
     </nav>
 
     <main>
-        <section id="sec-agenda" class="active">
+        <section id="view-agenda" class="view active">
             <div class="card">
-                <input type="text" id="task-text" placeholder="📝 Nouvelle tâche...">
-                <div style="display: flex; gap: 5px;">
+                <input type="text" id="task-title" placeholder="Titre de la tâche...">
+                <div style="display:flex; gap:10px;">
                     <input type="date" id="task-date">
                     <input type="time" id="task-time">
                 </div>
-                <button class="btn-save" onclick="addTask()">Enregistrer l'événement</button>
+                <button class="btn-action" onclick="saveTask()">Enregistrer la tâche</button>
             </div>
-            <div id="task-list"></div>
+            <div id="tasks-list"></div>
         </section>
 
-        <section id="sec-notes">
-            <div class="toolbar">
-                <button class="tool-btn" onclick="execCmd('bold')"><i class="fas fa-bold"></i></button>
-                <input type="color" id="txt-color" onchange="execCmd('foreColor', this.value)" style="width:40px; height:35px; padding:0; border:none;">
-                <button class="tool-btn" onclick="execCmd('insertUnorderedList')"><i class="fas fa-list"></i></button>
+        <section id="view-notes" class="view">
+            <div class="card">
+                <div class="toolbar">
+                    <button class="tool-btn" onclick="formatDoc('bold')"><i class="fas fa-bold"></i></button>
+                    <button class="tool-btn" onclick="formatDoc('italic')"><i class="fas fa-italic"></i></button>
+                    <input type="color" id="color-picker" onchange="formatDoc('foreColor', this.value)" style="width:40px; height:35px; border:none; padding:0;">
+                    <button class="tool-btn" onclick="formatDoc('hiliteColor', '#ffff00')"><i class="fas fa-highlighter"></i></button>
+                </div>
+                <div id="note-editor" contenteditable="true" placeholder="Commencez à écrire..."></div>
+                <button class="btn-action" id="save-note-btn" onclick="saveNote()">Sauvegarder la note</button>
             </div>
-            
-            <div id="note-editor" contenteditable="true" placeholder="Écrivez ici et utilisez la couleur..."></div>
-            <button class="btn-save" onclick="saveNote()" style="margin-bottom: 20px;">Sauvegarder la note</button>
-            
-            <div id="notes-list" class="notes-grid"></div>
+            <h3 style="margin: 15px 0;">Mes Notes Enregistrées</h3>
+            <div id="notes-list"></div>
         </section>
     </main>
 
     <div id="install-bar">
-        <span>Installer Stella sur cet appareil ?</span>
-        <button onclick="installApp()">INSTALLER</button>
+        <span>Installer Stella sur Android ?</span>
+        <button onclick="doInstall()" style="background:white; color:var(--primary); border:none; padding:8px 15px; border-radius:8px; font-weight:bold;">OUI</button>
     </div>
 
     <script>
         let deferredPrompt;
         let tasks = JSON.parse(localStorage.getItem('stella_tasks')) || [];
         let notes = JSON.parse(localStorage.getItem('stella_notes')) || [];
+        let editingNoteId = null;
 
-        // --- SYSTÈME D'INSTALLATION ---
+        // Installation
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log("L'événement d'installation est détecté !");
-            e.preventDefault();
-            deferredPrompt = e;
+            e.preventDefault(); deferredPrompt = e;
             document.getElementById('install-bar').style.display = 'flex';
         });
 
-        function installApp() {
+        function doInstall() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                    document.getElementById('install-bar').style.display = 'none';
-                    deferredPrompt = null;
-                });
+                deferredPrompt = null;
+                document.getElementById('install-bar').style.display = 'none';
             }
         }
 
-        // --- ÉDITEUR (COULEUR & STYLE) ---
-        function execCmd(cmd, value = null) {
-            document.execCommand(cmd, false, value);
+        // Navigation
+        function showView(view) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('view-' + view).classList.add('active');
+            document.getElementById('tab-' + view).classList.add('active');
+            if(view === 'notes') renderNotes();
+            if(view === 'agenda') renderTasks();
         }
+
+        // Formatage
+        function formatDoc(cmd, val) { document.execCommand(cmd, false, val); }
 
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
@@ -144,68 +152,92 @@
             document.getElementById('theme-icon').innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-            if(tab === 'agenda') {
-                document.querySelector('.nav-btn:nth-child(1)').classList.add('active');
-                document.getElementById('sec-agenda').classList.add('active');
-            } else {
-                document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
-                document.getElementById('sec-notes').classList.add('active');
-                renderNotes();
-            }
-        }
-
-        // --- LOGIQUE NOTES ---
+        // --- GESTION DES NOTES ---
         function saveNote() {
             const content = document.getElementById('note-editor').innerHTML;
-            if(content.trim() === "") return;
-            notes.unshift({ id: Date.now(), content, date: new Date().toLocaleDateString() });
+            if(!content.trim()) return;
+
+            if(editingNoteId) {
+                notes = notes.map(n => n.id === editingNoteId ? {...n, content, date: new Date().toLocaleString()} : n);
+                editingNoteId = null;
+                document.getElementById('save-note-btn').innerText = "Sauvegarder la note";
+            } else {
+                notes.unshift({ id: Date.now(), content, date: new Date().toLocaleString() });
+            }
+
             localStorage.setItem('stella_notes', JSON.stringify(notes));
             document.getElementById('note-editor').innerHTML = "";
             renderNotes();
         }
 
-        function renderNotes() {
-            const list = document.getElementById('notes-list');
-            list.innerHTML = "";
-            notes.forEach(n => {
-                const div = document.createElement('div');
-                div.className = 'note-item';
-                div.innerHTML = `<div style="font-size:12px;">${n.content}</div><div style="font-size:9px; position:absolute; bottom:5px; color:var(--text-light);">${n.date}</div>`;
-                list.appendChild(div);
-            });
+        function editNote(id) {
+            const note = notes.find(n => n.id === id);
+            document.getElementById('note-editor').innerHTML = note.content;
+            editingNoteId = id;
+            document.getElementById('save-note-btn').innerText = "Mettre à jour la note";
+            window.scrollTo(0,0);
         }
 
-        // --- LOGIQUE AGENDA ---
-        function addTask() {
-            const text = document.getElementById('task-text').value;
+        function deleteNote(id) {
+            if(confirm("Supprimer cette note ?")) {
+                notes = notes.filter(n => n.id !== id);
+                localStorage.setItem('stella_notes', JSON.stringify(notes));
+                renderNotes();
+            }
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('notes-list');
+            list.innerHTML = notes.map(n => `
+                <div class="note-item">
+                    <div class="note-preview">${n.content}</div>
+                    <div class="note-footer">
+                        <span>${n.date}</span>
+                        <div class="actions">
+                            <i class="fas fa-edit" style="color:var(--primary)" onclick="editNote(${n.id})"></i>
+                            <i class="fas fa-trash" style="color:#ff7675" onclick="deleteNote(${n.id})"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- GESTION AGENDA ---
+        function saveTask() {
+            const title = document.getElementById('task-title').value;
             const date = document.getElementById('task-date').value;
-            if(!text || !date) return;
-            tasks.push({ text, date, time: document.getElementById('task-time').value });
+            const time = document.getElementById('task-time').value;
+            if(!title || !date) return;
+
+            tasks.push({ id: Date.now(), title, date, time });
             localStorage.setItem('stella_tasks', JSON.stringify(tasks));
-            document.getElementById('task-text').value = "";
+            document.getElementById('task-title').value = "";
             renderTasks();
         }
 
         function renderTasks() {
-            const list = document.getElementById('task-list');
-            list.innerHTML = "";
-            tasks.forEach(t => {
-                const item = document.createElement('div');
-                item.className = 'card';
-                item.innerHTML = `<strong>${t.text}</strong><br><small>${t.date} ${t.time}</small>`;
-                list.appendChild(item);
-            });
+            const list = document.getElementById('tasks-list');
+            list.innerHTML = tasks.map(t => `
+                <div class="card" style="padding:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong>${t.title}</strong><br>
+                        <small>${t.date} à ${t.time}</small>
+                    </div>
+                    <i class="fas fa-check-circle" style="color:var(--primary); font-size:20px;" onclick="deleteTask(${t.id})"></i>
+                </div>
+            `).join('');
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            localStorage.setItem('stella_tasks', JSON.stringify(tasks));
+            renderTasks();
         }
 
         window.onload = () => {
             if(localStorage.getItem('stella_theme') === 'dark') toggleTheme();
             renderTasks();
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js');
-            }
+            if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
         };
     </script>
 </body>
