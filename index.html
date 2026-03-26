@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chrono Planneur Pro V2</title>
+    <title>Stella - Votre Assistant Personnel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,1228 +13,592 @@
         }
 
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1e40af;
-            --primary-light: #3b82f6;
-            --secondary: #8b5cf6;
-            --accent: #ec4899;
+            --primary: #87CEEB; /* Sky Blue */
+            --primary-dark: #5f9ea0;
+            --primary-light: #e0f7fa;
+            --secondary: #b0e0e6;
+            --accent: #4682b4;
             --success: #10b981;
             --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg: #f8fafc;
-            --bg-dark: #1e293b;
+            --bg: #f0f8ff; /* Alice Blue */
             --white: #ffffff;
-            --text-dark: #0f172a;
+            --text-dark: #1e293b;
             --text-light: #64748b;
             --border: #e2e8f0;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
             --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
-            --shadow-xl: 0 20px 40px rgba(0,0,0,0.2);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
         }
 
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--bg) 0%, #f1f5f9 100%);
+            background-color: var(--bg);
             color: var(--text-dark);
-            overflow-x: hidden;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Animations */
+        /* Header */
+        .header {
+            background: var(--white);
+            color: var(--accent);
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: var(--white);
+            padding: 10px;
+            justify-content: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn.active {
+            background: var(--primary-light);
+            color: var(--accent);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        section {
+            display: none;
+        }
+
+        section.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        /* Sections */
-        section {
-            display: none;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        section.active {
-            display: block;
-        }
-
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: var(--white);
-            padding: 20px;
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            letter-spacing: -0.5px;
-        }
-
-        .header p {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        /* Grid Container */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 16px;
-            margin-top: 24px;
-            padding: 20px;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Timer Card Mini */
-        .timer-card-mini {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            background-size: cover;
-            background-position: center;
-            border-radius: 16px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: var(--shadow-md);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            height: 150px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: var(--white);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .timer-card-mini::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.35);
-            z-index: 1;
-        }
-
-        .timer-card-mini:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-xl);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .timer-card-mini * {
-            z-index: 2;
-            position: relative;
-        }
-
-        .timer-card-mini strong {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: block;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .timer-card-mini small {
-            font-size: 24px;
-            font-weight: 700;
-            font-family: 'Courier New', monospace;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Form Card */
-        .form-card {
+        /* Module Agenda */
+        .agenda-input-card {
             background: var(--white);
-            padding: 32px;
-            border-radius: 20px;
-            max-width: 600px;
-            margin: 20px auto;
-            box-shadow: var(--shadow-lg);
-            animation: slideUp 0.5s ease-out;
-        }
-
-        .form-card h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: var(--text-dark);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 20px;
         }
 
         .input-group {
-            margin-bottom: 20px;
-            text-align: left;
+            margin-bottom: 15px;
         }
 
         .input-group label {
             display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-dark);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--accent);
         }
 
-        input, select {
+        input {
             width: 100%;
-            padding: 12px 14px;
-            margin: 8px 0;
-            border-radius: 10px;
+            padding: 12px;
             border: 2px solid var(--border);
+            border-radius: 10px;
             font-size: 15px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        input:focus, select:focus {
             outline: none;
+        }
+
+        input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        input::placeholder {
-            color: var(--text-light);
-        }
-
-        /* Sound Select with Preview */
-        .sound-select-group {
-            display: flex;
-            gap: 8px;
-            align-items: flex-end;
-        }
-
-        .sound-select-group select {
-            flex-grow: 1;
-        }
-
-        .btn-play {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
-            border: 2px solid var(--border);
-            background: var(--bg);
-            color: var(--primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-play:hover {
+        .btn-add {
+            width: 100%;
+            padding: 12px;
             background: var(--primary);
             color: var(--white);
-            border-color: var(--primary);
-        }
-
-        /* Background Gallery */
-        .background-gallery {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin: 12px 0;
-        }
-
-        .thumb {
-            height: 60px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 3px solid var(--border);
-            background-size: cover;
-            background-color: #ddd;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .thumb:hover {
-            transform: scale(1.05);
-        }
-
-        .thumb.active {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--primary);
-        }
-
-        .thumb::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .thumb:hover::after {
-            opacity: 1;
-        }
-
-        /* File Input for Gallery */
-        .file-input-wrapper {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-            margin-top: 12px;
-        }
-
-        .file-input-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px;
-            border: 2px dashed var(--primary);
-            border-radius: 10px;
-            background: rgba(37, 99, 235, 0.05);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .file-input-label:hover {
-            background: rgba(37, 99, 235, 0.1);
-            border-color: var(--primary-light);
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        /* Buttons */
-        .btn-main {
-            width: 100%;
-            padding: 14px 20px;
-            margin: 12px 0;
-            border-radius: 10px;
             border: none;
-            font-size: 16px;
-            font-weight: 600;
-            box-sizing: border-box;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-add:hover {
+            background: var(--accent);
+        }
+
+        .task-list {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
             gap: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .btn-main-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: var(--white);
-        }
-
-        .btn-main-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-main-success {
-            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-            color: var(--white);
-        }
-
-        .btn-main-danger {
-            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
-            color: var(--white);
-        }
-
-        .btn-back {
-            background: none;
-            border: none;
-            color: var(--primary);
-            cursor: pointer;
-            margin-bottom: 16px;
-            font-size: 16px;
-            font-weight: 600;
+        .task-item {
+            background: var(--white);
+            padding: 15px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.3s ease;
+            gap: 15px;
+            box-shadow: var(--shadow-sm);
+            border-left: 5px solid var(--primary);
         }
 
-        .btn-back:hover {
-            color: var(--primary-dark);
-            transform: translateX(-4px);
+        .task-item.completed {
+            opacity: 0.6;
+            border-left-color: var(--text-light);
         }
 
-        /* Focus Container */
-        .focus-container {
-            text-align: center;
-            min-height: 90vh;
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+        }
+
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-text {
+            font-weight: 600;
+            display: block;
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: var(--danger);
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        /* Module Notes */
+        .notes-container {
             display: flex;
             flex-direction: column;
+            gap: 20px;
+        }
+
+        .note-editor {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-md);
+        }
+
+        #note-content {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.6;
+            outline: none;
+            margin-bottom: 15px;
+            overflow-y: auto;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
             align-items: center;
-            justify-content: center;
-            color: var(--white);
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            background-size: cover;
-            background-position: center;
-            border-radius: 20px;
-            margin: 10px;
-            position: relative;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 15px;
+        }
+
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-picker-container label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        #highlight-color {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
             overflow: hidden;
         }
 
-        .focus-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-        }
-
-        .focus-content {
-            z-index: 2;
-            position: relative;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .close-focus {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: var(--white);
-            padding: 10px 14px;
-            border-radius: 50%;
+        .btn-tool {
+            padding: 8px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            width: 45px;
-            height: 45px;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            z-index: 10;
+            gap: 5px;
         }
 
-        .close-focus:hover {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.5);
+        .btn-tool:hover {
+            background: var(--primary-light);
         }
 
-        #focus-task-name {
-            margin-bottom: 24px;
-            font-size: 32px;
-            font-weight: 700;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        .notes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
         }
 
-        .progress-ring {
-            transform: rotate(-90deg);
-        }
-
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.5s ease;
-            transform-origin: 50% 50%;
-        }
-
-        #focus-time {
-            font-size: 56px;
-            font-weight: 700;
-            margin-top: -160px;
-            margin-bottom: 120px;
-            font-family: 'Courier New', monospace;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            letter-spacing: 2px;
-        }
-
-        .focus-buttons {
-            display: flex;
-            gap: 12px;
-            width: 90%;
-            margin-top: 20px;
-        }
-
-        .focus-buttons .btn-main {
-            flex: 1;
-            margin: 0;
-        }
-
-        /* Modal Alarm */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--white);
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            padding: 40px;
-            max-width: 500px;
-            animation: slideUp 0.4s ease;
-        }
-
-        .modal-icons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-bottom: 24px;
-        }
-
-        .modal-icon {
-            font-size: 60px;
-            color: #fbbf24;
-            animation: bounce 0.6s infinite;
-        }
-
-        .modal-icon:nth-child(2) {
-            animation-delay: 0.1s;
-        }
-
-        .modal h1 {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal p {
-            font-size: 16px;
-            margin-bottom: 24px;
-            opacity: 0.9;
-        }
-
-        /* Notification Toast */
-        .notification-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
+        .note-card {
             background: var(--white);
-            color: var(--text-dark);
-            padding: 16px 20px;
+            padding: 15px;
             border-radius: 12px;
-            box-shadow: var(--shadow-xl);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            max-width: 400px;
-            z-index: 1500;
-            animation: slideIn 0.4s ease;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            max-height: 200px;
+            overflow: hidden;
+            cursor: pointer;
         }
 
-        .notification-toast.success {
-            border-left: 4px solid var(--success);
+        .note-card-content {
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
         }
 
-        .notification-toast.error {
-            border-left: 4px solid var(--danger);
-        }
-
-        .notification-toast.info {
-            border-left: 4px solid var(--primary);
-        }
-
-        .notification-toast .close-btn {
-            background: none;
-            border: none;
+        .note-card-date {
+            font-size: 11px;
             color: var(--text-light);
-            cursor: pointer;
-            font-size: 18px;
-            margin-left: auto;
-            transition: all 0.3s ease;
-        }
-
-        .notification-toast .close-btn:hover {
-            color: var(--text-dark);
-        }
-
-        /* Floating Add Button */
-        .floating-add {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: var(--white);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: var(--shadow-xl);
-            cursor: pointer;
-            z-index: 99;
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-        .floating-add:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: var(--shadow-xl);
+            margin-top: 10px;
+            display: block;
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 12px;
-                padding: 12px;
-            }
-
-            .form-card {
-                padding: 20px;
-                margin: 12px;
-            }
-
-            .background-gallery {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            #focus-time {
-                font-size: 42px;
-                margin-top: -120px;
-                margin-bottom: 80px;
-            }
-
-            .focus-buttons {
-                flex-direction: column;
-            }
-
-            .modal-content {
-                padding: 24px;
-            }
+        @media (max-width: 600px) {
+            main { padding: 10px; }
+            .header h1 { font-size: 20px; }
+            .nav-btn { padding: 8px 12px; font-size: 14px; }
         }
 
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-dark);
+        /* Highlight Style */
+        .highlight {
+            border-radius: 3px;
+            padding: 1px 0;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="header">
-        <h1><i class="fas fa-hourglass-end"></i> Chrono Planneur Pro</h1>
-        <p>Gérez vos tâches avec style et précision</p>
-    </div>
+    <header class="header">
+        <h1><i class="fas fa-star"></i> STELLA</h1>
+        <p>Votre assistant quotidien frais et moderne</p>
+    </header>
 
-    <!-- Section Grid -->
-    <section id="sec-grid" class="active">
-        <div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
-            <h2 style="margin-bottom: 8px; color: var(--text-dark);">Mes Chronos</h2>
-            <p style="color: var(--text-light); margin-bottom: 20px;">Cliquez sur un chrono pour le gérer</p>
-            <div id="timers-grid" class="grid-container"></div>
-            <div id="empty-state" class="empty-state" style="display: none;">
-                <i class="fas fa-inbox"></i>
-                <h3>Aucun chrono pour le moment</h3>
-                <p>Créez votre premier chrono en cliquant sur le bouton +</p>
-            </div>
-        </div>
-        <button class="floating-add" onclick="showSection('sec-form')" title="Ajouter un chrono">
-            <i class="fas fa-plus"></i>
-        </button>
-    </section>
+    <nav class="nav-tabs">
+        <button class="nav-btn active" onclick="switchTab('agenda')"><i class="fas fa-calendar-alt"></i> Agenda</button>
+        <button class="nav-btn" onclick="switchTab('notes')"><i class="fas fa-sticky-note"></i> Notes</button>
+    </nav>
 
-    <!-- Section Form -->
-    <section id="sec-form">
-        <div class="form-card">
-            <button class="btn-back" onclick="showSection('sec-grid')">
-                <i class="fas fa-arrow-left"></i> Retour
-            </button>
-            <h2>Créer un Nouveau Chrono</h2>
-
-            <div class="input-group">
-                <label>Nom de la tâche</label>
-                <input type="text" id="task-name" placeholder="Ex: Séance de sport, Méditation...">
+    <main>
+        <!-- Section Agenda -->
+        <section id="sec-agenda" class="active">
+            <div class="agenda-input-card">
+                <div class="input-group">
+                    <label>Nouvelle tâche</label>
+                    <input type="text" id="task-text" placeholder="Que devez-vous faire ?">
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>Date</label>
+                        <input type="date" id="task-date">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Heure</label>
+                        <input type="time" id="task-time">
+                    </div>
+                </div>
+                <button class="btn-add" onclick="addTask()">Ajouter à l'agenda</button>
             </div>
 
-            <div class="input-group">
-                <label>Date et Heure de fin</label>
-                <input type="datetime-local" id="task-date">
+            <div id="task-list" class="task-list">
+                <!-- Les tâches apparaîtront ici -->
             </div>
+        </section>
 
-            <div class="input-group">
-                <label>Répétition</label>
-                <select id="repeat-select">
-                    <option value="none">Une seule fois</option>
-                    <option value="daily">Chaque jour à la même heure</option>
-                </select>
-            </div>
+        <!-- Section Notes -->
+        <section id="sec-notes">
+            <div class="notes-container">
+                <div class="note-editor">
+                    <div class="toolbar">
+                        <div class="color-picker-container">
+                            <label>Surligneur :</label>
+                            <input type="color" id="highlight-color" value="#87CEEB">
+                        </div>
+                        <button class="btn-tool" onclick="applyHighlight()">
+                            <i class="fas fa-highlighter"></i> Surligner la sélection
+                        </button>
+                        <button class="btn-tool" onclick="clearNote()">
+                            <i class="fas fa-eraser"></i> Effacer
+                        </button>
+                        <button class="btn-tool" onclick="saveNote()" style="margin-left: auto; background: var(--primary); color: white;">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                    </div>
+                    <div id="note-content" contenteditable="true" placeholder="Écrivez votre note ici..."></div>
+                </div>
 
-            <div class="input-group">
-                <label>Sonnerie</label>
-                <div class="sound-select-group">
-                    <select id="sound-select">
-                        <optgroup label="Sonneries Classiques">
-                            <option value="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">Bip Simple</option>
-                            <option value="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">Digital Pro</option>
-                            <option value="https://actions.google.com/sounds/v1/foley/door_bell.ogg">Sonnette Zen</option>
-                        </optgroup>
-                        <optgroup label="Sonneries Modernes">
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3">Notification Douce</option>
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2870/2870-preview.mp3">Alerte Légère</option>
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3">Signal Clair</option>
-                        </optgroup>
-                        <optgroup label="Sonneries Énergiques">
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2871/2871-preview.mp3">Réveil Énergique</option>
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2872/2872-preview.mp3">Alarme Forte</option>
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3">Signal Urgent</option>
-                        </optgroup>
-                        <optgroup label="Sonneries Musicales">
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3">Mélodie Douce</option>
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2875/2875-preview.mp3">Mélodie Joyeuse</option>
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2876/2876-preview.mp3">Mélodie Classique</option>
-                        </optgroup>
-                        <optgroup label="Sonneries Naturelles">
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2877/2877-preview.mp3">Chant d'Oiseau</option>
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2878/2878-preview.mp3">Bruit de Cloche</option>
-                            <option value="https://assets.mixkit.co/active_storage/sfx/2879/2879-preview.mp3">Tintement Cristallin</option>
-                        </optgroup>
-                    </select>
-                    <button class="btn-play" onclick="testSound()" title="Écouter la sonnerie">
-                        <i class="fas fa-play"></i>
-                    </button>
+                <h3 style="color: var(--accent); margin-top: 10px;">Mes Notes Enregistrées</h3>
+                <div id="notes-list" class="notes-list">
+                    <!-- Les notes apparaîtront ici -->
                 </div>
             </div>
-
-            <div class="input-group">
-                <label>Fond d'écran</label>
-                <div class="background-gallery" id="gallery"></div>
-                <div class="file-input-wrapper">
-                    <label class="file-input-label" for="file-input">
-                        <i class="fas fa-image"></i> Importer une image
-                    </label>
-                    <input type="file" id="file-input" accept="image/*" multiple>
-                </div>
-            </div>
-
-            <button class="btn-main btn-main-primary" onclick="addTimer()">
-                <i class="fas fa-play-circle"></i> Démarrer le Chrono
-            </button>
-        </div>
-    </section>
-
-    <!-- Section Focus -->
-    <section id="sec-focus">
-        <div id="focus-area" class="focus-container">
-            <button class="close-focus" onclick="showSection('sec-grid')" title="Fermer">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="focus-content">
-                <h2 id="focus-task-name">Tâche</h2>
-
-                <svg class="progress-ring" width="280" height="280">
-                    <circle stroke="rgba(255,255,255,0.15)" stroke-width="10" fill="transparent" r="130" cx="140" cy="140"/>
-                    <circle id="progress-bar" stroke="white" stroke-width="10" fill="transparent" r="130" cx="140" cy="140" stroke-dasharray="816.81" stroke-dashoffset="816.81" stroke-linecap="round"/>
-                </svg>
-
-                <div id="focus-time">00:00:00</div>
-
-                <div class="focus-buttons">
-                    <button class="btn-main btn-main-success" onclick="restartTimer()">
-                        <i class="fas fa-redo"></i> Relancer
-                    </button>
-                    <button class="btn-main btn-main-danger" onclick="deleteTimer()">
-                        <i class="fas fa-trash"></i> Supprimer
-                    </button>
-                </div>
-                <button class="btn-main btn-main-primary" onclick="shareTimer()" style="width: 90%; margin-top: 15px;">
-                    <i class="fab fa-whatsapp"></i> Partager Statut
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Modal Alarm -->
-    <div id="alarm-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-icons">
-                <i class="fas fa-thumbs-up modal-icon"></i>
-                <i class="fas fa-thumbs-up modal-icon"></i>
-            </div>
-            <h1>Terminé !</h1>
-            <p id="alarm-task">Votre temps est écoulé.</p>
-            <button class="btn-main btn-main-primary" onclick="closeAlarm()" style="width: 200px; margin: 20px auto 0;">
-                <i class="fas fa-check-circle"></i> Bravo !
-            </button>
-        </div>
-    </div>
-
-    <!-- Audio Element -->
-    <audio id="alarm-sound"></audio>
+        </section>
+    </main>
 
     <script>
-        // ============ SERVICE WORKER INLINE ============
-        // Créer le Service Worker en tant que Blob et l'enregistrer
-        const serviceWorkerCode = `
-            const CACHE_NAME = 'chrono-planneur-v1';
+        // --- Gestion des Onglets ---
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
             
-            self.addEventListener('install', event => {
-                self.skipWaiting();
-            });
-
-            self.addEventListener('activate', event => {
-                self.clients.claim();
-            });
-
-            self.addEventListener('message', event => {
-                if (event.data && event.data.type === 'TIMER_DATA') {
-                    const timers = event.data.timers;
-                    const now = Date.now();
-
-                    timers.forEach(timer => {
-                        if (timer.target <= now && !timer.notified) {
-                            self.registration.showNotification(\`⏱️ \${timer.name}\`, {
-                                body: 'Votre temps est écoulé !',
-                                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%232563eb"/><text x="50" y="60" font-size="40" font-weight="bold" fill="white" text-anchor="middle">⏱</text></svg>',
-                                badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%232563eb"/></svg>',
-                                tag: \`timer-\${timer.id}\`,
-                                requireInteraction: true,
-                                actions: [
-                                    { action: 'close', title: 'Fermer' },
-                                    { action: 'open', title: 'Ouvrir' }
-                                ]
-                            });
-
-                            if (timer.sound) {
-                                self.clients.matchAll().then(clients => {
-                                    clients.forEach(client => {
-                                        client.postMessage({
-                                            type: 'PLAY_ALARM',
-                                            soundUrl: timer.sound
-                                        });
-                                    });
-                                });
-                            }
-                        }
-                    });
-                }
-            });
-
-            self.addEventListener('notificationclick', event => {
-                event.notification.close();
-                if (event.action === 'open' || !event.action) {
-                    event.waitUntil(
-                        clients.matchAll({ type: 'window' }).then(clientList => {
-                            for (let i = 0; i < clientList.length; i++) {
-                                const client = clientList[i];
-                                if (client.url === '/' && 'focus' in client) {
-                                    return client.focus();
-                                }
-                            }
-                            if (clients.openWindow) {
-                                return clients.openWindow('/');
-                            }
-                        })
-                    );
-                }
-            });
-
-            self.addEventListener('fetch', event => {
-                event.respondWith(
-                    caches.match(event.request).then(response => {
-                        return response || fetch(event.request).catch(() => {
-                            return caches.match('/index.html');
-                        });
-                    })
-                );
-            });
-        `;
-
-        // Enregistrer le Service Worker
-        if ('serviceWorker' in navigator) {
-            const blob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-            navigator.serviceWorker.register(swUrl).then(registration => {
-                console.log('Service Worker enregistré avec succès');
-                setInterval(() => {
-                    if (navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage({
-                            type: 'TIMER_DATA',
-                            timers: timers
-                        });
-                    }
-                }, 30000);
-            }).catch(err => {
-                console.log('Erreur enregistrement Service Worker:', err);
-            });
-        }
-
-        // Écouter les messages du Service Worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', event => {
-                if (event.data.type === 'PLAY_ALARM') {
-                    const audio = document.getElementById('alarm-sound');
-                    audio.src = event.data.soundUrl;
-                    audio.loop = true;
-                    audio.play().catch(err => console.log('Erreur lecture alarme:', err));
-                }
-            });
-        }
-
-        // ============ STATE MANAGEMENT ============
-        let timers = JSON.parse(localStorage.getItem('timers')) || [];
-        let customImages = JSON.parse(localStorage.getItem('customImages')) || [];
-        
-        const defaultImages = [
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&h=300&fit=crop"
-        ];
-
-        let selectedImg = defaultImages[0];
-        let currentFocusId = null;
-        let updateInterval = null;
-
-        // ============ INITIALIZATION ============
-        window.addEventListener('load', () => {
-            initGallery();
-            renderGrid();
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'TIMER_DATA',
-                    timers: timers
-                });
-            }
-        });
-
-        // ============ SECTION MANAGEMENT ============
-        function showSection(id) {
-            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if (id === 'sec-grid') {
-                renderGrid();
-                clearInterval(updateInterval);
-            } else if (id === 'sec-focus') {
-                startTimerUpdate();
+            if (tab === 'agenda') {
+                document.querySelector('.nav-btn:nth-child(1)').classList.add('active');
+                document.getElementById('sec-agenda').classList.add('active');
+            } else {
+                document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
+                document.getElementById('sec-notes').classList.add('active');
+                renderNotes();
             }
         }
 
-        // ============ GALLERY MANAGEMENT ============
-        function initGallery() {
-            const gal = document.getElementById('gallery');
-            gal.innerHTML = '';
-            
-            const allImages = [...defaultImages, ...customImages];
-            
-            allImages.forEach((img, idx) => {
-                const d = document.createElement('div');
-                d.className = 'thumb';
-                d.style.backgroundImage = `url(${img})`;
-                d.onclick = () => {
-                    document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
-                    d.classList.add('active');
-                    selectedImg = img;
-                };
-                gal.appendChild(d);
-            });
-            
-            if (gal.firstChild) {
-                gal.firstChild.classList.add('active');
-            }
-        }
+        // --- Module Agenda ---
+        let tasks = JSON.parse(localStorage.getItem('stella_tasks')) || [];
 
-        // ============ FILE UPLOAD HANDLER ============
-        document.getElementById('file-input').addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const imageData = event.target.result;
-                    customImages.push(imageData);
-                    localStorage.setItem('customImages', JSON.stringify(customImages));
-                    initGallery();
-                    showNotification('Image ajoutée avec succès !', 'success');
-                };
-                reader.readAsDataURL(file);
-            });
-            this.value = '';
-        });
+        function addTask() {
+            const text = document.getElementById('task-text').value;
+            const date = document.getElementById('task-date').value;
+            const time = document.getElementById('task-time').value;
 
-        // ============ SOUND MANAGEMENT ============
-        function testSound() {
-            const audio = document.getElementById('alarm-sound');
-            audio.src = document.getElementById('sound-select').value;
-            audio.play().catch(err => console.log('Erreur lecture son:', err));
-        }
-
-        // ============ TIMER MANAGEMENT ============
-        function addTimer() {
-            const name = document.getElementById('task-name').value || "Tâche";
-            const targetStr = document.getElementById('task-date').value;
-            
-            if (!targetStr) {
-                showNotification('Veuillez choisir une date', 'error');
+            if (!text || !date || !time) {
+                alert("Veuillez remplir tous les champs.");
                 return;
             }
 
-            const target = new Date(targetStr).getTime();
-            const now = Date.now();
-
-            if (target <= now) {
-                showNotification('La date doit être dans le futur', 'error');
-                return;
-            }
-
-            const repeat = document.getElementById('repeat-select').value;
-            const sound = document.getElementById('sound-select').value;
-            const duration = target - now;
-
-            const newT = {
+            const newTask = {
                 id: Date.now(),
-                name,
-                target,
-                bg: selectedImg,
-                start: now,
-                sound,
-                repeat,
-                duration
+                text: text,
+                date: date,
+                time: time,
+                completed: false
             };
 
-            timers.push(newT);
-            save();
+            tasks.push(newTask);
+            saveTasks();
+            renderTasks();
             
-            document.getElementById('task-name').value = '';
-            document.getElementById('task-date').value = '';
-            
-            showNotification('Chrono créé avec succès !', 'success');
-            showSection('sec-grid');
+            // Reset fields
+            document.getElementById('task-text').value = '';
         }
 
-        function renderGrid() {
-            const grid = document.getElementById('timers-grid');
-            const emptyState = document.getElementById('empty-state');
-            
-            grid.innerHTML = "";
-            
-            if (timers.length === 0) {
-                emptyState.style.display = 'block';
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? {...t, completed: !t.completed} : t);
+            saveTasks();
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+            renderTasks();
+        }
+
+        function saveTasks() {
+            localStorage.setItem('stella_tasks', JSON.stringify(tasks));
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('task-list');
+            list.innerHTML = '';
+
+            if (tasks.length === 0) {
+                list.innerHTML = '<p style="text-align:center; color:var(--text-light); padding:20px;">Aucune tâche prévue.</p>';
                 return;
             }
 
-            emptyState.style.display = 'none';
+            // Sort by date and time
+            const sortedTasks = [...tasks].sort((a, b) => {
+                return new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time);
+            });
 
-            timers.forEach(t => {
+            sortedTasks.forEach(task => {
                 const div = document.createElement('div');
-                div.className = 'timer-card-mini';
-                div.style.backgroundImage = `url(${t.bg})`;
-                div.innerHTML = `<strong>${t.name}</strong><small id="mini-${t.id}">--:--</small>`;
-                div.onclick = () => {
-                    currentFocusId = t.id;
-                    showSection('sec-focus');
-                    openFocus(t);
-                };
-                grid.appendChild(div);
-            });
-
-            updateAllTimers();
-        }
-
-        function openFocus(t) {
-            document.getElementById('focus-area').style.backgroundImage = `url(${t.bg})`;
-            document.getElementById('focus-task-name').innerText = t.name;
-        }
-
-        function startTimerUpdate() {
-            updateAllTimers();
-            updateInterval = setInterval(updateAllTimers, 100);
-        }
-
-        function updateAllTimers() {
-            timers.forEach(t => {
-                const remaining = Math.max(0, t.target - Date.now());
-                const display = formatTime(remaining);
-
-                const miniEl = document.getElementById(`mini-${t.id}`);
-                if (miniEl) miniEl.innerText = display;
-
-                if (t.id === currentFocusId) {
-                    updateFocusDisplay(t, remaining);
-                }
-
-                if (remaining === 0 && !t.finished) {
-                    t.finished = true;
-                    triggerAlarm(t);
-                    save();
-                }
+                div.className = `task-item ${task.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    <div class="task-info">
+                        <span class="task-text">${task.text}</span>
+                        <span class="task-time"><i class="far fa-clock"></i> ${formatDate(task.date)} à ${task.time}</span>
+                    </div>
+                    <button class="btn-delete" onclick="deleteTask(${task.id})"><i class="fas fa-trash-alt"></i></button>
+                `;
+                list.appendChild(div);
             });
         }
 
-        function updateFocusDisplay(t, remaining) {
-            const timeEl = document.getElementById('focus-time');
-            timeEl.innerText = formatTime(remaining);
-
-            const circumference = 2 * Math.PI * 130;
-            const offset = circumference * (remaining / t.duration);
-            document.getElementById('progress-bar').style.strokeDashoffset = offset;
+        function formatDate(dateStr) {
+            const options = { day: 'numeric', month: 'long' };
+            return new Date(dateStr).toLocaleDateString('fr-FR', options);
         }
 
-        function formatTime(ms) {
-            const totalSeconds = Math.floor(ms / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        // --- Module Notes ---
+        let notes = JSON.parse(localStorage.getItem('stella_notes')) || [];
+
+        function applyHighlight() {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            const color = document.getElementById('highlight-color').value;
+            
+            // Convert hex to rgba with 35% opacity for translucency
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            const rgba = `rgba(${r}, ${g}, ${b}, 0.35)`;
+
+            const span = document.createElement('span');
+            span.className = 'highlight';
+            span.style.backgroundColor = rgba;
+            
+            try {
+                range.surroundContents(span);
+            } catch (e) {
+                // Fallback for complex selections
+                const content = range.extractContents();
+                span.appendChild(content);
+                range.insertNode(span);
+            }
+            
+            selection.removeAllRanges();
         }
 
-        function restartTimer() {
-            const idx = timers.findIndex(t => t.id === currentFocusId);
-            if (idx !== -1) {
-                timers[idx].start = Date.now();
-                timers[idx].target = Date.now() + timers[idx].duration;
-                timers[idx].finished = false;
-                save();
-                showNotification('Chrono relancé !', 'success');
+        function clearNote() {
+            if (confirm("Effacer le contenu actuel ?")) {
+                document.getElementById('note-content').innerHTML = '';
             }
         }
 
-        function deleteTimer() {
-            if (confirm('Êtes-vous sûr de vouloir supprimer ce chrono ?')) {
-                timers = timers.filter(t => t.id !== currentFocusId);
-                save();
-                showNotification('Chrono supprimé', 'success');
-                showSection('sec-grid');
+        function saveNote() {
+            const content = document.getElementById('note-content').innerHTML;
+            if (!content.trim() || content === '<br>') {
+                alert("La note est vide.");
+                return;
+            }
+
+            const newNote = {
+                id: Date.now(),
+                content: content,
+                date: new Date().toLocaleString('fr-FR')
+            };
+
+            notes.unshift(newNote);
+            localStorage.setItem('stella_notes', JSON.stringify(notes));
+            alert("Note enregistrée !");
+            document.getElementById('note-content').innerHTML = '';
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('notes-list');
+            list.innerHTML = '';
+
+            notes.forEach(note => {
+                const div = document.createElement('div');
+                div.className = 'note-card';
+                div.onclick = () => loadNote(note.id);
+                div.innerHTML = `
+                    <div class="note-card-content">${note.content}</div>
+                    <span class="note-card-date">${note.date}</span>
+                    <button onclick="deleteNote(event, ${note.id})" style="position:absolute; top:10px; right:10px; border:none; background:none; color:var(--danger); cursor:pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function loadNote(id) {
+            const note = notes.find(n => n.id === id);
+            if (note) {
+                document.getElementById('note-content').innerHTML = note.content;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
-        function shareTimer() {
-            const t = timers.find(t => t.id === currentFocusId);
-            if (!t) return;
-
-            const remaining = Math.max(0, t.target - Date.now());
-            const display = formatTime(remaining);
-            const text = `⏱️ ${t.name}\n⏳ Temps restant: ${display}\n📱 Chrono Planneur Pro`;
-            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
-        }
-
-        // ============ ALARM SYSTEM ============
-        function triggerAlarm(t) {
-            playAlarmSound(t.sound);
-            showAlarmModal(t.name);
-            showNotification(`${t.name} est terminé !`, 'success');
-        }
-
-        function playAlarmSound(soundUrl) {
-            const audio = document.getElementById('alarm-sound');
-            audio.src = soundUrl;
-            audio.loop = true;
-            audio.play().catch(err => console.log('Erreur lecture alarme:', err));
-        }
-
-        function showAlarmModal(taskName) {
-            document.getElementById('alarm-task').innerText = `${taskName} est terminé !`;
-            document.getElementById('alarm-modal').classList.add('active');
-        }
-
-        function closeAlarm() {
-            document.getElementById('alarm-modal').classList.remove('active');
-            const audio = document.getElementById('alarm-sound');
-            audio.pause();
-            audio.currentTime = 0;
-        }
-
-        // ============ NOTIFICATIONS ============
-        function showNotification(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `notification-toast ${type}`;
-            toast.innerHTML = `
-                <span>${message}</span>
-                <button class="close-btn" onclick="this.parentElement.remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 4000);
-        }
-
-        // ============ STORAGE ============
-        function save() {
-            localStorage.setItem('timers', JSON.stringify(timers));
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'TIMER_DATA',
-                    timers: timers
-                });
+        function deleteNote(event, id) {
+            event.stopPropagation();
+            if (confirm("Supprimer cette note ?")) {
+                notes = notes.filter(n => n.id !== id);
+                localStorage.setItem('stella_notes', JSON.stringify(notes));
+                renderNotes();
             }
         }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTasks();
+            // Set default date to today
+            document.getElementById('task-date').valueAsDate = new Date();
+        });
     </script>
-    <script src="https://pl28725493.effectivegatecpm.com/92/24/15/922415557c0b2e238f75d831946ca7cc.js"></script>
 </body>
 </html>
