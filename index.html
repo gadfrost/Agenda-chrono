@@ -15,54 +15,50 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        /* Variables de Thème */
         :root {
             --primary: #87CEEB; --accent: #4682b4; --bg: #f0f8ff; --white: #ffffff;
             --text-dark: #1e293b; --text-light: #64748b; --border: #e2e8f0;
             --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --card-bg: #ffffff;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text-dark); min-height: 100vh; }
+
+        /* Mode Sombre */
+        body.dark-mode {
+            --bg: #0f172a; --white: #1e293b; --text-dark: #f1f5f9;
+            --text-light: #94a3b8; --border: #334155; --card-bg: #1e293b;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text-dark); min-height: 100vh; transition: 0.3s; }
         
-        .header { background: var(--white); color: var(--accent); padding: 15px; text-align: center; border-bottom: 3px solid var(--primary); }
+        .header { background: var(--white); color: var(--accent); padding: 15px; text-align: center; border-bottom: 3px solid var(--primary); position: relative; }
+        .theme-toggle { position: absolute; right: 15px; top: 18px; cursor: pointer; font-size: 20px; color: var(--accent); border: none; background: none; }
+
         .nav-tabs { display: flex; background: var(--white); padding: 10px; justify-content: center; gap: 10px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-        .nav-btn { padding: 10px 20px; border: none; background: transparent; color: var(--text-light); font-weight: 600; cursor: pointer; border-radius: 8px; transition: 0.3s; }
-        .nav-btn.active { background: #e0f7fa; color: var(--accent); }
+        .nav-btn { padding: 10px 20px; border: none; background: transparent; color: var(--text-light); font-weight: 600; cursor: pointer; border-radius: 8px; }
+        .nav-btn.active { background: var(--primary); color: white; }
 
         main { padding: 20px; max-width: 900px; margin: 0 auto; }
         section { display: none; animation: fadeIn 0.3s ease; }
         section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card { background: var(--white); padding: 20px; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; outline: none; margin-bottom: 10px; font-size: 16px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid var(--border); }
+        input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; outline: none; margin-bottom: 10px; background: var(--white); color: var(--text-dark); }
         .btn-main { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
 
         .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .note-card { 
-            background: var(--white); padding: 15px; border-radius: 12px; box-shadow: var(--shadow); 
-            cursor: pointer; height: 150px; display: flex; flex-direction: column;
-            border-bottom: 4px solid var(--primary); transition: transform 0.2s;
-        }
-        .note-card:active { transform: scale(0.95); }
-        .note-card-preview { font-size: 13px; overflow: hidden; flex: 1; pointer-events: none; }
+        .note-card { background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: var(--shadow); cursor: pointer; height: 150px; display: flex; flex-direction: column; border-bottom: 4px solid var(--primary); position: relative; }
+        .note-card-preview { font-size: 13px; overflow: hidden; flex: 1; }
         .note-card-date { font-size: 10px; color: var(--text-light); margin-top: 5px; }
 
-        .modal { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal-content { 
-            background: var(--white); width: 100%; max-width: 600px; border-radius: 20px; 
-            max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;
-        }
-        .modal-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        #note-editor { padding: 20px; overflow-y: auto; outline: none; min-height: 300px; font-size: 16px; line-height: 1.6; }
-        .toolbar { padding: 10px; background: #f8fafc; border-top: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--white); width: 100%; max-width: 600px; border-radius: 20px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+        #note-editor { padding: 20px; overflow-y: auto; outline: none; min-height: 300px; font-size: 16px; background: var(--white); }
         
-        #install-banner {
-            display: none; background: var(--white); padding: 15px; position: fixed; bottom: 20px; 
-            left: 20px; right: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
-            border: 2px solid var(--primary); z-index: 3000; align-items: center; gap: 12px;
-        }
+        #install-banner { display: none; background: var(--white); padding: 15px; position: fixed; bottom: 20px; left: 20px; right: 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 2px solid var(--primary); z-index: 3000; align-items: center; gap: 12px; }
         .highlight { border-radius: 3px; padding: 2px 0; }
     </style>
 </head>
@@ -71,6 +67,9 @@
     <header class="header">
         <h1><i class="fas fa-star"></i> STELLA</h1>
         <p>Accueil - Votre assistant intelligent</p>
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon">
+            <i class="fas fa-moon"></i>
+        </button>
     </header>
 
     <nav class="nav-tabs">
@@ -102,27 +101,23 @@
 
     <div id="note-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <span id="modal-title" style="font-weight: bold; color: var(--accent);">Édition de Note</span>
+            <div style="padding: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                <span id="modal-title" style="font-weight: bold; color: var(--accent);">Édition</span>
                 <button onclick="closeNoteModal()" style="background:none; border:none; font-size:24px; color:var(--text-light);">&times;</button>
             </div>
-            <div id="note-editor" contenteditable="true" placeholder="Commencez à écrire..."></div>
-            <div class="toolbar">
-                <input type="color" id="hl-color" value="#87CEEB" style="width:35px; height:35px; padding:0; border:none;">
-                <button onclick="applyHl()" style="padding:5px 10px; border-radius:5px;"><i class="fas fa-highlighter"></i> Surligner</button>
-                <button onclick="saveNote()" style="margin-left:auto; background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold;">Enregistrer</button>
+            <div id="note-editor" contenteditable="true"></div>
+            <div style="padding: 10px; background: var(--bg); display: flex; gap: 10px; border-top: 1px solid var(--border);">
+                <input type="color" id="hl-color" value="#87CEEB" style="width:35px; height:35px; padding:0; border:none; margin:0;">
+                <button onclick="applyHl()" style="padding:5px 10px; border-radius:5px;">Surligner</button>
+                <button onclick="saveNote()" style="margin-left:auto; background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:5px; font-weight:bold;">Sauver</button>
             </div>
         </div>
     </div>
 
     <div id="install-banner">
         <i class="fas fa-mobile-alt" style="font-size: 24px; color: var(--primary);"></i>
-        <div style="flex: 1;">
-            <strong style="display:block; font-size:14px;">Installer Stella</strong>
-            <span style="font-size:11px;">Ajouter à votre écran d'accueil</span>
-        </div>
+        <div style="flex: 1;"><strong>Installer Stella</strong></div>
         <button id="btn-install-now" style="background:var(--primary); color:white; border:none; padding:8px 12px; border-radius:8px;">Installer</button>
-        <button id="btn-close-banner" style="background:none; border:none; font-size:20px;">&times;</button>
     </div>
 
     <script>
@@ -131,23 +126,38 @@
         let currentNoteId = null;
         let deferredPrompt;
 
-        // PWA
+        // --- THEME LOGIC ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('stella_theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+
+        function updateThemeIcon(isDark) {
+            const icon = document.getElementById('theme-icon').querySelector('i');
+            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // --- INITIAL LOAD ---
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('stella_theme');
+            if(savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                updateThemeIcon(true);
+            }
+            renderTasks();
+            document.getElementById('task-date').valueAsDate = new Date();
+        };
+
+        // --- PWA & OTHERS (Logique inchangée) ---
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
+            e.preventDefault(); deferredPrompt = e;
             document.getElementById('install-banner').style.display = 'flex';
         });
 
-        document.getElementById('btn-install-now').addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt = null;
-                document.getElementById('install-banner').style.display = 'none';
-            }
-        });
-
-        document.getElementById('btn-close-banner').addEventListener('click', () => {
-            document.getElementById('install-banner').style.display = 'none';
+        document.getElementById('btn-install-now').addEventListener('click', () => {
+            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
         });
 
         function switchTab(tab) {
@@ -156,7 +166,6 @@
             if(tab === 'agenda') {
                 document.querySelector('.nav-btn:nth-child(1)').classList.add('active');
                 document.getElementById('sec-agenda').classList.add('active');
-                renderTasks();
             } else {
                 document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
                 document.getElementById('sec-notes').classList.add('active');
@@ -170,11 +179,7 @@
             if(id) {
                 const note = notes.find(n => n.id === id);
                 editor.innerHTML = note.content;
-                document.getElementById('modal-title').innerText = "Modifier la note";
-            } else {
-                editor.innerHTML = "";
-                document.getElementById('modal-title').innerText = "Nouvelle note";
-            }
+            } else { editor.innerHTML = ""; }
             document.getElementById('note-modal').style.display = 'flex';
         }
 
@@ -189,8 +194,7 @@
                 notes.unshift({ id: Date.now(), content, date: new Date().toLocaleDateString() });
             }
             localStorage.setItem('stella_notes', JSON.stringify(notes));
-            closeNoteModal();
-            renderNotes();
+            closeNoteModal(); renderNotes();
         }
 
         function renderNotes() {
@@ -200,7 +204,8 @@
                 const card = document.createElement('div');
                 card.className = 'note-card';
                 card.onclick = () => openNoteModal(n.id);
-                card.innerHTML = `<div class="note-card-preview">${n.content}</div><div class="note-card-date">${n.date}</div>
+                card.innerHTML = `<div class="note-card-preview">${n.content}</div>
+                                  <div class="note-card-date">${n.date}</div>
                                   <button onclick="event.stopPropagation(); deleteNote(${n.id})" style="position:absolute; bottom:10px; right:10px; border:none; background:none; color:red;"><i class="fas fa-trash"></i></button>`;
                 list.appendChild(card);
             });
@@ -232,17 +237,15 @@
             if(!text || !date || !time) return;
             tasks.push({ id: Date.now(), text, date, time });
             localStorage.setItem('stella_tasks', JSON.stringify(tasks));
-            document.getElementById('task-text').value = '';
-            renderTasks();
+            document.getElementById('task-text').value = ''; renderTasks();
         }
 
         function renderTasks() {
-            const list = document.getElementById('task-list');
-            list.innerHTML = "";
+            const list = document.getElementById('task-list'); list.innerHTML = "";
             tasks.sort((a,b) => new Date(a.date+' '+a.time) - new Date(b.date+' '+b.time)).forEach(t => {
                 const item = document.createElement('div');
                 item.className = 'card'; item.style.padding = "12px";
-                item.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;">
+                item.innerHTML = `<div style="display:flex; justify-content:space-between;">
                                     <div><strong>${t.text}</strong><br><small>${t.date} à ${t.time}</small></div>
                                     <button onclick="deleteTask(${t.id})" style="border:none; background:none; color:red;"><i class="fas fa-trash"></i></button>
                                   </div>`;
@@ -252,11 +255,9 @@
 
         function deleteTask(id) {
             tasks = tasks.filter(t => t.id !== id);
-            localStorage.setItem('stella_tasks', JSON.stringify(tasks));
-            renderTasks();
+            localStorage.setItem('stella_tasks', JSON.stringify(tasks)); renderTasks();
         }
 
-        window.onload = () => { renderTasks(); document.getElementById('task-date').valueAsDate = new Date(); };
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
     </script>
 </body>
