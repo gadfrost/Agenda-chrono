@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#87CEEB">
-    <title>Stella - Assistant Intelligent</title>
+    <title>Stella - Assistant</title>
     
     <script src="https://pl28725493.profitablecpmratenetwork.com/92/24/15/922415557c0b2e238f75d831946ca7cc.js"></script>
     
@@ -16,65 +16,65 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            --primary: #87CEEB; --accent: #4682b4; --bg: #f8fafc; --white: #ffffff;
+            --primary: #87CEEB; --bg: #f8fafc; --white: #ffffff;
             --text-dark: #1e293b; --text-light: #64748b; --border: #e2e8f0;
-            --shadow: 0 10px 15px -3px rgba(0,0,0,0.1); --card-bg: #ffffff;
+            --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
         body.dark-mode {
             --bg: #0f172a; --white: #1e293b; --text-dark: #f8fafc;
-            --text-light: #94a3b8; --border: #334155; --card-bg: #1e293b;
-            --shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+            --text-light: #94a3b8; --border: #334155;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text-dark); min-height: 100vh; transition: 0.3s; }
-        .header { background: var(--white); padding: 25px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
-        .theme-toggle { position: absolute; right: 20px; top: 25px; cursor: pointer; font-size: 22px; color: var(--text-light); border: none; background: none; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text-dark); min-height: 100vh; padding-bottom: 80px; }
         
-        .nav-tabs { display: flex; background: var(--white); margin: 10px 20px; padding: 5px; border-radius: 12px; box-shadow: var(--shadow); justify-content: center; gap: 5px; }
-        .nav-btn { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-light); font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .header { background: var(--white); padding: 20px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
+        .theme-toggle { position: absolute; right: 20px; top: 20px; cursor: pointer; font-size: 20px; border: none; background: none; color: var(--text-light); }
+
+        .nav-tabs { display: flex; background: var(--white); margin: 15px; padding: 5px; border-radius: 12px; box-shadow: var(--shadow); }
+        .nav-btn { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-light); font-weight: bold; border-radius: 10px; cursor: pointer; }
         .nav-btn.active { background: var(--primary); color: white; }
-        
-        main { padding: 10px 20px; max-width: 600px; margin: 0 auto; }
+
+        main { padding: 0 15px; max-width: 600px; margin: 0 auto; }
         section { display: none; }
-        section.active { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .card { background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid var(--border); position: relative; }
-        input, textarea { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text-dark); margin-bottom: 10px; font-family: inherit; }
-        .btn-main { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        
-        .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .note-card { 
-            background: var(--card-bg); padding: 15px; border-radius: 15px; height: 160px; 
-            border-top: 4px solid var(--primary); position: relative; box-shadow: var(--shadow);
-            overflow: hidden; display: flex; flex-direction: column;
-        }
-        .note-preview { font-size: 13px; flex: 1; overflow: hidden; margin-bottom: 5px; }
-        .note-date { font-size: 10px; color: var(--text-light); }
-        .btn-del { position: absolute; top: 10px; right: 10px; color: #ff6b6b; border: none; background: none; cursor: pointer; font-size: 14px; }
+        section.active { display: block; }
 
-        /* Modal d'édition */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--white); width: 100%; max-width: 500px; padding: 20px; border-radius: 20px; box-shadow: var(--shadow); }
-
-        #install-banner {
-            display: none; position: fixed; bottom: 20px; left: 20px; right: 20px;
-            background: var(--white); padding: 15px; border-radius: 15px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2); border: 2px solid var(--primary);
-            z-index: 9999; align-items: center; gap: 15px;
+        .card { background: var(--white); padding: 15px; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 15px; border: 1px solid var(--border); }
+        input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text-dark); margin-bottom: 10px; }
+        
+        /* Zone de saisie RICH TEXT (Pour la couleur) */
+        #note-editor { 
+            min-height: 200px; padding: 15px; border: 2px dashed var(--primary); 
+            border-radius: 10px; background: var(--bg); color: var(--text-dark);
+            margin-bottom: 15px; outline: none; overflow-y: auto;
         }
+
+        .toolbar { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        .tool-btn { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--white); cursor: pointer; color: var(--text-dark); }
+
+        .btn-save { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; }
+
+        .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .note-item { background: var(--white); padding: 12px; border-radius: 12px; border-top: 4px solid var(--primary); height: 140px; overflow: hidden; position: relative; box-shadow: var(--shadow); }
+
+        /* BANNIÈRE D'INSTALLATION (LA BARRE BLEUE) */
+        #install-bar {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0; 
+            background: var(--primary); color: white; padding: 15px;
+            z-index: 10000; justify-content: space-between; align-items: center;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+        }
+        #install-bar button { background: white; color: var(--primary); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <h1 style="color: var(--primary); letter-spacing: 1px;">STELLA</h1>
-        <p>Accueil - Assistant Intelligent</p>
+        <h1 style="color: var(--primary);">STELLA</h1>
         <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon"><i class="fas fa-moon"></i></button>
     </header>
 
     <nav class="nav-tabs">
-        <button class="nav-btn active" onclick="switchTab('agenda')"><i class="fas fa-calendar-alt"></i> Agenda</button>
-        <button class="nav-btn" onclick="switchTab('notes')"><i class="fas fa-sticky-note"></i> Notes</button>
+        <button class="nav-btn active" onclick="switchTab('agenda')">Agenda</button>
+        <button class="nav-btn" onclick="switchTab('notes')">Notes</button>
     </nav>
 
     <main>
@@ -85,62 +85,58 @@
                     <input type="date" id="task-date">
                     <input type="time" id="task-time">
                 </div>
-                <button class="btn-main" onclick="addTask()">Ajouter à l'agenda</button>
+                <button class="btn-save" onclick="addTask()">Enregistrer l'événement</button>
             </div>
             <div id="task-list"></div>
         </section>
 
         <section id="sec-notes">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="font-size: 1.2rem;">Mes Notes</h2>
-                <button onclick="openNoteModal()" style="background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">+ Nouveau</button>
+            <div class="toolbar">
+                <button class="tool-btn" onclick="execCmd('bold')"><i class="fas fa-bold"></i></button>
+                <input type="color" id="txt-color" onchange="execCmd('foreColor', this.value)" style="width:40px; height:35px; padding:0; border:none;">
+                <button class="tool-btn" onclick="execCmd('insertUnorderedList')"><i class="fas fa-list"></i></button>
             </div>
+            
+            <div id="note-editor" contenteditable="true" placeholder="Écrivez ici et utilisez la couleur..."></div>
+            <button class="btn-save" onclick="saveNote()" style="margin-bottom: 20px;">Sauvegarder la note</button>
+            
             <div id="notes-list" class="notes-grid"></div>
         </section>
     </main>
 
-    <div id="note-modal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 15px; color: var(--primary);">Édition</h3>
-            <textarea id="note-textarea" rows="8" placeholder="Écrivez votre note ici..."></textarea>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-main" onclick="saveNote()">Enregistrer</button>
-                <button class="btn-main" onclick="closeNoteModal()" style="background: var(--text-light);">Fermer</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="install-banner">
-        <img src="icon.png" width="40" height="40" style="border-radius: 8px;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1164/1164620.png'">
-        <div style="flex: 1; font-size: 14px;"><strong>Installer Stella</strong><br>Sur votre écran d'accueil</div>
-        <button onclick="triggerInstall()" style="background:var(--primary); color:white; border:none; padding:10px 15px; border-radius:8px; font-weight:bold;">OUI</button>
-        <button onclick="this.parentElement.style.display='none'" style="background:none; border:none; font-size:20px; margin-left:5px;">&times;</button>
+    <div id="install-bar">
+        <span>Installer Stella sur cet appareil ?</span>
+        <button onclick="installApp()">INSTALLER</button>
     </div>
 
     <script>
         let deferredPrompt;
         let tasks = JSON.parse(localStorage.getItem('stella_tasks')) || [];
         let notes = JSON.parse(localStorage.getItem('stella_notes')) || [];
-        let currentNoteId = null;
 
-        // PWA Installation
+        // --- SYSTÈME D'INSTALLATION ---
         window.addEventListener('beforeinstallprompt', (e) => {
+            console.log("L'événement d'installation est détecté !");
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('install-banner').style.display = 'flex';
+            document.getElementById('install-bar').style.display = 'flex';
         });
 
-        function triggerInstall() {
+        function installApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then(() => {
-                    document.getElementById('install-banner').style.display = 'none';
+                    document.getElementById('install-bar').style.display = 'none';
                     deferredPrompt = null;
                 });
             }
         }
 
-        // Thème
+        // --- ÉDITEUR (COULEUR & STYLE) ---
+        function execCmd(cmd, value = null) {
+            document.execCommand(cmd, false, value);
+        }
+
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
@@ -148,14 +144,12 @@
             document.getElementById('theme-icon').innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         }
 
-        // Navigation
         function switchTab(tab) {
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
             if(tab === 'agenda') {
                 document.querySelector('.nav-btn:nth-child(1)').classList.add('active');
                 document.getElementById('sec-agenda').classList.add('active');
-                renderTasks();
             } else {
                 document.querySelector('.nav-btn:nth-child(2)').classList.add('active');
                 document.getElementById('sec-notes').classList.add('active');
@@ -163,112 +157,56 @@
             }
         }
 
-        // --- GESTION AGENDA ---
+        // --- LOGIQUE NOTES ---
+        function saveNote() {
+            const content = document.getElementById('note-editor').innerHTML;
+            if(content.trim() === "") return;
+            notes.unshift({ id: Date.now(), content, date: new Date().toLocaleDateString() });
+            localStorage.setItem('stella_notes', JSON.stringify(notes));
+            document.getElementById('note-editor').innerHTML = "";
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const list = document.getElementById('notes-list');
+            list.innerHTML = "";
+            notes.forEach(n => {
+                const div = document.createElement('div');
+                div.className = 'note-item';
+                div.innerHTML = `<div style="font-size:12px;">${n.content}</div><div style="font-size:9px; position:absolute; bottom:5px; color:var(--text-light);">${n.date}</div>`;
+                list.appendChild(div);
+            });
+        }
+
+        // --- LOGIQUE AGENDA ---
         function addTask() {
             const text = document.getElementById('task-text').value;
             const date = document.getElementById('task-date').value;
-            const time = document.getElementById('task-time').value;
             if(!text || !date) return;
-
-            tasks.push({ id: Date.now(), text, date, time });
+            tasks.push({ text, date, time: document.getElementById('task-time').value });
             localStorage.setItem('stella_tasks', JSON.stringify(tasks));
-            document.getElementById('task-text').value = '';
-            renderTasks();
-        }
-
-        function deleteTask(id) {
-            tasks = tasks.filter(t => t.id !== id);
-            localStorage.setItem('stella_tasks', JSON.stringify(tasks));
+            document.getElementById('task-text').value = "";
             renderTasks();
         }
 
         function renderTasks() {
             const list = document.getElementById('task-list');
             list.innerHTML = "";
-            tasks.sort((a,b) => new Date(a.date+' '+a.time) - new Date(b.date+' '+b.time)).forEach(t => {
+            tasks.forEach(t => {
                 const item = document.createElement('div');
                 item.className = 'card';
-                item.style.padding = '15px';
-                item.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <strong>${t.text}</strong><br>
-                            <small style="color:var(--text-light)">${t.date} • ${t.time || '--:--'}</small>
-                        </div>
-                        <button onclick="deleteTask(${t.id})" style="border:none; background:none; color:#ff6b6b; cursor:pointer;"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
+                item.innerHTML = `<strong>${t.text}</strong><br><small>${t.date} ${t.time}</small>`;
                 list.appendChild(item);
             });
         }
 
-        // --- GESTION NOTES ---
-        function openNoteModal(id = null) {
-            currentNoteId = id;
-            const textarea = document.getElementById('note-textarea');
-            if(id) {
-                const note = notes.find(n => n.id === id);
-                textarea.value = note.content;
-            } else {
-                textarea.value = "";
-            }
-            document.getElementById('note-modal').style.display = 'flex';
-        }
-
-        function closeNoteModal() {
-            document.getElementById('note-modal').style.display = 'none';
-        }
-
-        function saveNote() {
-            const content = document.getElementById('note-textarea').value;
-            if(!content.trim()) return;
-
-            if(currentNoteId) {
-                notes = notes.map(n => n.id === currentNoteId ? { ...n, content, date: new Date().toLocaleDateString() } : n);
-            } else {
-                notes.unshift({ id: Date.now(), content, date: new Date().toLocaleDateString() });
-            }
-            
-            localStorage.setItem('stella_notes', JSON.stringify(notes));
-            closeNoteModal();
-            renderNotes();
-        }
-
-        function deleteNote(event, id) {
-            event.stopPropagation();
-            if(confirm("Supprimer cette note ?")) {
-                notes = notes.filter(n => n.id !== id);
-                localStorage.setItem('stella_notes', JSON.stringify(notes));
-                renderNotes();
-            }
-        }
-
-        function renderNotes() {
-            const list = document.getElementById('notes-list');
-            list.innerHTML = "";
-            notes.forEach(note => {
-                const div = document.createElement('div');
-                div.className = 'note-card';
-                div.onclick = () => openNoteModal(note.id);
-                div.innerHTML = `
-                    <button class="btn-del" onclick="deleteNote(event, ${note.id})"><i class="fas fa-times"></i></button>
-                    <div class="note-preview">${note.content}</div>
-                    <div class="note-date">${note.date}</div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        // Initialisation
         window.onload = () => {
             if(localStorage.getItem('stella_theme') === 'dark') toggleTheme();
             renderTasks();
-            document.getElementById('task-date').valueAsDate = new Date();
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js');
+            }
         };
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(() => console.log("Stella SW Loaded"));
-        }
     </script>
 </body>
 </html>
