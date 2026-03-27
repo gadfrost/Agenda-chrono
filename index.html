@@ -24,47 +24,51 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 80px; transition: 0.3s; }
 
-        /* Header & Navigation */
+        /* Header */
         .header { background: var(--card); padding: 25px; text-align: center; border-bottom: 3px solid var(--primary); position: relative; box-shadow: var(--shadow); }
         .manual-install-btn { position: absolute; left: 20px; top: 25px; cursor: pointer; font-size: 22px; border: none; background: none; color: var(--primary); }
         .theme-toggle { position: absolute; right: 20px; top: 25px; cursor: pointer; font-size: 22px; border: none; background: none; color: var(--primary); }
 
+        /* Navigation */
         .tabs { display: flex; background: var(--card); margin: 20px; padding: 5px; border-radius: 15px; box-shadow: var(--shadow); gap: 5px; }
         .tab-btn { flex: 1; padding: 14px; border: none; border-radius: 12px; background: transparent; color: var(--text-light); font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .tab-btn.active { background: var(--primary); color: white; }
 
-        main { max-width: 800px; margin: 0 auto; padding: 0 15px; }
+        main { max-width: 1000px; margin: 0 auto; padding: 0 15px; }
         .view { display: none; }
         .view.active { display: block; animation: slideUp 0.4s ease-out; }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Formulaires */
+        /* Éditeur & Barre d'outils */
         .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
-        input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font-size: 16px; }
+        .toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; background: var(--bg); padding: 10px; border-radius: 10px; }
+        .tool-btn { width: 35px; height: 35px; border: none; border-radius: 8px; background: var(--card); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        #note-editor { min-height: 150px; border: 1.5px solid var(--border); border-radius: 12px; padding: 15px; background: var(--card); outline: none; margin-bottom: 15px; }
+
         .btn-main { width: 100%; padding: 16px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer; }
 
-        /* GRILLE DES NOTES (Correction plein écran) */
-        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; width: 100%; }
+        /* GRILLE DES NOTES (Plein écran / Large) */
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; width: 100%; }
         .note-card { 
-            background: var(--card); padding: 15px; border-radius: 18px; border-top: 5px solid var(--primary); 
-            height: 180px; display: flex; flex-direction: column; justify-content: space-between;
+            background: var(--card); padding: 20px; border-radius: 18px; border-top: 5px solid var(--primary); 
+            height: 220px; display: flex; flex-direction: column; justify-content: space-between;
             box-shadow: var(--shadow); overflow: hidden;
         }
-        .note-body { font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; }
-        .note-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 8px; }
-        .action-icon { color: var(--primary); font-size: 18px; cursor: pointer; }
+        .note-body { font-size: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; line-height: 1.6; }
+        .note-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; }
+        .action-icon { color: var(--primary); font-size: 18px; cursor: pointer; margin-left: 15px; }
 
         /* Modale */
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; position: relative; }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 90%; max-width: 650px; position: relative; }
         .close-modal { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header class="header">
-        <button class="manual-install-btn" onclick="installPWA()"><i class="fas fa-cloud-download-alt"></i></button>
-        <h1 style="color: var(--primary);">STELLA</h1>
+        <button class="manual-install-btn" onclick="installPWA()" title="Installer Stella"><i class="fas fa-cloud-download-alt"></i></button>
+        <h1 style="color: var(--primary); letter-spacing: 1px;">STELLA</h1>
         <p style="font-size: 13px;">Accueil - Votre Assistant</p>
         <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon"><i class="fas fa-moon"></i></button>
     </header>
@@ -79,14 +83,21 @@
             <div class="card">
                 <input type="text" id="task-title" placeholder="Titre de la tâche">
                 <input type="date" id="task-date">
-                <button class="btn-main" onclick="saveTask()">Enregistrer</button>
+                <button class="btn-main" onclick="saveTask()">Enregistrer la tâche</button>
             </div>
             <div id="tasks-container"></div>
         </section>
 
         <section id="view-notes" class="view">
             <div class="card">
-                <div id="note-editor" contenteditable="true" style="min-height:120px; border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:10px; outline:none;" placeholder="Écrire ici..."></div>
+                <div class="toolbar">
+                    <button class="tool-btn" onclick="execCmd('bold')"><i class="fas fa-bold"></i></button>
+                    <button class="tool-btn" onclick="execCmd('italic')"><i class="fas fa-italic"></i></button>
+                    <input type="color" onchange="execCmd('foreColor', this.value)" style="width:30px; height:30px; border:none; background:none; cursor:pointer;">
+                    <button class="tool-btn" onclick="execCmd('hiliteColor', '#ffff00')"><i class="fas fa-highlighter"></i></button>
+                    <button class="tool-btn" onclick="execCmd('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
+                </div>
+                <div id="note-editor" contenteditable="true" placeholder="Rédigez votre note ici..."></div>
                 <button class="btn-main" id="note-save-btn" onclick="saveNote()">Sauvegarder la note</button>
             </div>
             <div id="notes-grid" class="notes-grid"></div>
@@ -96,8 +107,8 @@
     <div id="readModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeReadModal()">&times;</span>
-            <h2 style="color: var(--primary); margin-bottom:15px;">Note</h2>
-            <div id="full-note-content" style="line-height:1.6; max-height:60vh; overflow-y:auto;"></div>
+            <h2 style="color: var(--primary); margin-bottom:20px;">Lecture de la Note</h2>
+            <div id="full-note-content" style="line-height:1.7; font-size:18px; max-height:60vh; overflow-y:auto; padding-right:10px;"></div>
         </div>
     </div>
 
@@ -107,21 +118,25 @@
         let notes = JSON.parse(localStorage.getItem('stella_notes')) || [];
         let editingId = null;
 
-        // --- PWA ---
+        // PWA
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
         function installPWA() {
             if(deferredPrompt) { deferredPrompt.prompt(); }
-            else { alert("Allez dans le menu de Chrome > Installer l'application."); }
+            else { alert("Utilisez le menu Chrome > Installer l'application."); }
         }
 
-        // --- NAVIGATION ---
+        // Navigation
         function switchView(view) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('view-' + view).classList.add('active');
             document.getElementById('btn-' + view).classList.add('active');
             if(view === 'notes') renderNotes();
+            if(view === 'agenda') renderTasks();
         }
+
+        // Commandes d'édition (Gras, Couleur...)
+        function execCmd(cmd, val = null) { document.execCommand(cmd, false, val); }
 
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
@@ -130,7 +145,7 @@
             document.getElementById('theme-icon').innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         }
 
-        // --- NOTES (Correction Modif/Suppr) ---
+        // --- GESTION DES NOTES ---
         function saveNote() {
             const editor = document.getElementById('note-editor');
             const content = editor.innerHTML.trim();
@@ -156,10 +171,10 @@
                     <div class="note-body">${n.content}</div>
                     <div class="note-actions">
                         <small style="opacity:0.6">${n.date}</small>
-                        <div style="display:flex; gap:10px;">
-                            <i class="fas fa-eye action-icon" onclick="openReadModal(${n.id})"></i>
-                            <i class="fas fa-edit action-icon" onclick="editNote(${n.id})"></i>
-                            <i class="fas fa-trash action-icon" style="color:#ff7675" onclick="deleteNote(${n.id})"></i>
+                        <div>
+                            <i class="fas fa-eye action-icon" onclick="openReadModal(${n.id})" title="Lire"></i>
+                            <i class="fas fa-edit action-icon" onclick="editNote(${n.id})" title="Modifier"></i>
+                            <i class="fas fa-trash action-icon" style="color:#ff7675" onclick="deleteNote(${n.id})" title="Supprimer"></i>
                         </div>
                     </div>
                 </div>
@@ -170,12 +185,12 @@
             const n = notes.find(x => x.id === id);
             document.getElementById('note-editor').innerHTML = n.content;
             editingId = id;
-            document.getElementById('note-save-btn').innerText = "Mettre à jour";
-            window.scrollTo(0, 80);
+            document.getElementById('note-save-btn').innerText = "Mettre à jour la note";
+            window.scrollTo(0, 50);
         }
 
         function deleteNote(id) {
-            if(confirm("Supprimer cette note ?")) {
+            if(confirm("Supprimer définitivement cette note ?")) {
                 notes = notes.filter(x => x.id !== id);
                 localStorage.setItem('stella_notes', JSON.stringify(notes));
                 renderNotes();
@@ -190,7 +205,7 @@
 
         function closeReadModal() { document.getElementById('readModal').style.display = 'none'; }
 
-        // --- AGENDA ---
+        // --- GESTION AGENDA ---
         function saveTask() {
             const title = document.getElementById('task-title').value;
             const date = document.getElementById('task-date').value;
@@ -203,7 +218,7 @@
 
         function renderTasks() {
             const container = document.getElementById('tasks-container');
-            container.innerHTML = tasks.map(t => `
+            container.innerHTML = tasks.sort((a,b) => new Date(a.date) - new Date(b.date)).map(t => `
                 <div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
                     <div><strong>${t.title}</strong><br><small>${t.date}</small></div>
                     <i class="fas fa-check-circle action-icon" onclick="deleteTask(${t.id})"></i>
@@ -219,7 +234,8 @@
 
         window.onload = () => {
             if(localStorage.getItem('stella_theme') === 'dark') toggleTheme();
-            renderTasks(); renderNotes();
+            renderTasks();
+            renderNotes();
             if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
         };
     </script>
