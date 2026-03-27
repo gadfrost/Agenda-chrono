@@ -1,29 +1,24 @@
-const CACHE_NAME = 'stella-v12';
-const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon.png',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
-];
+let deferredPrompt;
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
-  );
-  self.skipWaiting();
+// On écoute l'événement de Chrome
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log("Stella est prête pour l'installation.");
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-    ))
-  );
-});
-
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then(res => res || fetch(e.request))
-  );
+// Action du bouton en haut à gauche
+document.getElementById('manual-install').addEventListener('click', () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Installation acceptée');
+            }
+            deferredPrompt = null; 
+        });
+    } else {
+        // Si Chrome n'a pas encore détecté le manifest, on donne une astuce
+        alert("Pour installer ou mettre à jour : \n1. Cliquez sur les 3 points en haut à droite de Chrome.\n2. Choisissez 'Installer l'application'.");
+    }
 });
