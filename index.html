@@ -43,12 +43,11 @@
         .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
         input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--bg); color: var(--text); font-size: 16px; outline: none; }
         .btn-main { width: 100%; padding: 16px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.98); }
 
-        /* Grilles (Notes et Agenda) */
+        /* Grilles */
         .display-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; width: 100%; }
         
-        /* Cartes Agenda & Notes */
+        /* Cartes */
         .item-card { 
             background: var(--card); padding: 20px; border-radius: 18px; border-top: 5px solid var(--primary); 
             min-height: 150px; display: flex; flex-direction: column; justify-content: space-between;
@@ -63,7 +62,6 @@
         .tool-btn { width: 35px; height: 35px; border: none; border-radius: 8px; background: var(--card); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; }
         #note-editor { min-height: 150px; border: 1.5px solid var(--border); border-radius: 12px; padding: 15px; background: var(--card); outline: none; margin-bottom: 15px; }
 
-        /* Modale */
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 90%; max-width: 650px; position: relative; }
         .close-modal { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; }
@@ -87,7 +85,7 @@
         <section id="view-agenda" class="view active">
             <div class="card">
                 <input type="text" id="task-title" placeholder="Titre de la tâche (ex: Examen de PHP)">
-                <input type="date" id="task-date">
+                <input type="datetime-local" id="task-date">
                 <button class="btn-main" onclick="saveTask()">Enregistrer la tâche</button>
             </div>
             <div id="tasks-grid" class="display-grid"></div>
@@ -149,23 +147,30 @@
             tasks.push({ id: Date.now(), title, date });
             localStorage.setItem('stella_tasks', JSON.stringify(tasks));
             document.getElementById('task-title').value = "";
+            document.getElementById('task-date').value = "";
             renderTasks();
         }
 
         function renderTasks() {
             const grid = document.getElementById('tasks-grid');
-            grid.innerHTML = tasks.sort((a,b) => new Date(a.date) - new Date(b.date)).map(t => `
+            grid.innerHTML = tasks.sort((a,b) => new Date(a.date) - new Date(b.date)).map(t => {
+                const dateObj = new Date(t.date);
+                const dateString = dateObj.toLocaleDateString();
+                const timeString = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                return `
                 <div class="item-card">
                     <div class="item-body">
                         <strong style="font-size: 17px; color: var(--primary);">${t.title}</strong>
-                        <p style="margin-top: 10px;"><i class="fas fa-calendar-day"></i> Échéance : ${new Date(t.date).toLocaleDateString()}</p>
+                        <p style="margin-top: 10px;"><i class="fas fa-calendar-alt"></i> ${dateString}</p>
+                        <p style="color: var(--primary); font-weight: bold;"><i class="fas fa-clock"></i> ${timeString}</p>
                     </div>
                     <div class="item-actions">
-                        <small style="opacity:0.6">En attente</small>
+                        <small style="opacity:0.6">À faire</small>
                         <i class="fas fa-check-circle action-icon" style="color:#2ecc71" onclick="deleteTask(${t.id})" title="Terminer"></i>
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
         function deleteTask(id) {
