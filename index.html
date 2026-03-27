@@ -6,8 +6,6 @@
     <meta name="theme-color" content="#87CEEB">
     <title>Stella - Assistant Intelligent</title>
     
-    <script src="https://pl28725493.profitablecpmratenetwork.com/92/24/15/922415557c0b2e238f75d831946ca7cc.js"></script>
-    
     <link rel="manifest" href="./manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
@@ -26,8 +24,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 80px; transition: 0.3s; }
 
-        /* Header */
+        /* Header avec bouton installation manuel */
         .header { background: var(--card); padding: 25px; text-align: center; border-bottom: 3px solid var(--primary); position: relative; box-shadow: var(--shadow); }
+        
+        .manual-install-btn { 
+            position: absolute; left: 20px; top: 25px; cursor: pointer; font-size: 22px; 
+            border: none; background: none; color: var(--primary); transition: 0.2s;
+        }
+        .manual-install-btn:active { transform: scale(1.2); }
+
         .theme-toggle { position: absolute; right: 20px; top: 25px; cursor: pointer; font-size: 22px; border: none; background: none; color: var(--primary); }
 
         /* Navigation Style Accueil */
@@ -40,19 +45,10 @@
         .view.active { display: block; animation: slideUp 0.4s ease-out; }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Cartes */
+        /* Cartes & Inputs */
         .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); }
         input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font-size: 16px; }
         .btn-main { width: 100%; padding: 16px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.98); }
-
-        /* Éditeur */
-        .toolbar { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; background: var(--bg); padding: 10px; border-radius: 10px; border: 1px solid var(--border); }
-        .tool-btn { width: 40px; height: 40px; border: none; border-radius: 8px; background: var(--card); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        #note-editor { 
-            min-height: 250px; border: 1.5px solid var(--border); border-radius: 12px; padding: 15px; 
-            background: var(--card); overflow-y: auto; outline: none; margin-bottom: 15px; font-size: 16px; line-height: 1.6;
-        }
 
         /* Grille des Notes */
         .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -63,38 +59,27 @@
         }
         .note-body { font-size: 14px; color: var(--text); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; }
         .note-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
-        .action-icon { color: var(--primary); font-size: 18px; cursor: pointer; transition: 0.2s; }
+        .action-icon { color: var(--primary); font-size: 18px; cursor: pointer; }
 
-        /* MODALE DE LECTURE OPTIMISÉE PC/ANDROID */
-        .modal {
-            display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; 
-            background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center; backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background: var(--card); padding: 30px; border-radius: 20px; 
-            width: 95%; max-width: 600px; /* Adaptatif */
-            height: auto; max-height: 90vh; overflow-y: auto; 
-            position: relative; box-shadow: var(--shadow); border: 2px solid var(--primary);
-        }
+        /* Modale */
+        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--card); padding: 30px; border-radius: 20px; width: 95%; max-width: 600px; position: relative; border: 2px solid var(--primary); }
         .close-modal { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: var(--text-light); }
-        .read-body { line-height: 1.8; font-size: 18px; margin-top: 20px; color: var(--text); word-wrap: break-word; }
-
-        /* Installation */
-        #install-bar {
-            display: none; position: fixed; bottom: 0; left: 0; right: 0; 
-            background: var(--primary); color: white; padding: 15px 25px;
-            z-index: 9999; justify-content: space-between; align-items: center;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1); border-radius: 20px 20px 0 0;
-        }
-        #install-bar button { background: white; color: var(--primary); border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header class="header">
+        <button class="manual-install-btn" onclick="installPWA()" title="Installer Stella">
+            <i class="fas fa-cloud-download-alt"></i>
+        </button>
+        
         <h1 style="color: var(--primary); letter-spacing: 1.5px;">STELLA</h1>
         <p style="font-size: 13px; font-weight: 500;">Accueil - Votre Assistant</p>
-        <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon"><i class="fas fa-moon"></i></button>
+        
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon">
+            <i class="fas fa-moon"></i>
+        </button>
     </header>
 
     <nav class="tabs">
@@ -117,17 +102,9 @@
 
         <section id="view-notes" class="view">
             <div class="card">
-                <div class="toolbar">
-                    <button class="tool-btn" onclick="execCmd('bold')"><i class="fas fa-bold"></i></button>
-                    <button class="tool-btn" onclick="execCmd('italic')"><i class="fas fa-italic"></i></button>
-                    <input type="color" onchange="execCmd('foreColor', this.value)" style="width:35px; height:35px; border:none; background:none; cursor:pointer;">
-                    <button class="tool-btn" onclick="execCmd('hiliteColor', '#ffff00')"><i class="fas fa-highlighter"></i></button>
-                    <button class="tool-btn" onclick="execCmd('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
-                </div>
-                <div id="note-editor" contenteditable="true" placeholder="Rédigez votre note ici..."></div>
+                <div id="note-editor" contenteditable="true" style="min-height:150px; border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:10px;" placeholder="Rédigez ici..."></div>
                 <button class="btn-main" id="note-save-btn" onclick="saveNote()">Sauvegarder la note</button>
             </div>
-            <h3 style="margin-bottom: 15px;">Mes Notes</h3>
             <div id="notes-grid" class="notes-grid"></div>
         </section>
     </main>
@@ -135,38 +112,33 @@
     <div id="readModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeReadModal()">&times;</span>
-            <h2 style="color: var(--primary); border-bottom: 1.5px solid var(--primary); padding-bottom: 10px;">Lecture de la Note</h2>
-            <div id="full-note-content" class="read-body"></div>
-            <button class="btn-main" style="margin-top: 30px;" onclick="closeReadModal()">Fermer la lecture</button>
+            <h2 style="color: var(--primary);">Lecture</h2>
+            <div id="full-note-content" style="margin-top:20px; line-height:1.6;"></div>
         </div>
-    </div>
-
-    <div id="install-bar">
-        <span>Installer Stella sur Android ?</span>
-        <button onclick="installPWA()">INSTALLER</button>
     </div>
 
     <script>
         let deferredPrompt;
         let tasks = JSON.parse(localStorage.getItem('stella_tasks')) || [];
         let notes = JSON.parse(localStorage.getItem('stella_notes')) || [];
-        let editId = null;
 
-        // PWA - Android & PC
+        // Ecoute de l'événement PWA
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferredPrompt = e;
-            document.getElementById('install-bar').style.display = 'flex';
+            e.preventDefault();
+            deferredPrompt = e;
         });
 
         function installPWA() {
             if(deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt = null;
-                document.getElementById('install-bar').style.display = 'none';
+                deferredPrompt.userChoice.then((choice) => {
+                    if(choice.outcome === 'accepted') deferredPrompt = null;
+                });
+            } else {
+                alert("Pour installer Stella :\n1. Cliquez sur les 3 points de Chrome.\n2. Sélectionnez 'Installer l'application'.");
             }
         }
 
-        // Navigation entre Agenda et Notes
         function switchView(view) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -176,8 +148,6 @@
             if(view === 'agenda') renderTasks();
         }
 
-        function execCmd(cmd, val = null) { document.execCommand(cmd, false, val); }
-
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
@@ -185,19 +155,11 @@
             document.getElementById('theme-icon').innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         }
 
-        // --- GESTION DES NOTES ---
+        // --- Fonctions simplifiées pour l'exemple ---
         function saveNote() {
             const content = document.getElementById('note-editor').innerHTML;
-            if(!content.trim() || content === '<br>') return;
-
-            if(editId) {
-                notes = notes.map(n => n.id === editId ? {...n, content, date: new Date().toLocaleString()} : n);
-                editId = null;
-                document.getElementById('note-save-btn').innerText = "Sauvegarder la note";
-            } else {
-                notes.unshift({ id: Date.now(), content, date: new Date().toLocaleString() });
-            }
-
+            if(!content.trim()) return;
+            notes.unshift({ id: Date.now(), content, date: new Date().toLocaleString() });
             localStorage.setItem('stella_notes', JSON.stringify(notes));
             document.getElementById('note-editor').innerHTML = "";
             renderNotes();
@@ -209,12 +171,8 @@
                 <div class="note-card">
                     <div class="note-body">${n.content}</div>
                     <div class="note-actions">
-                        <small style="font-size:9px; opacity:0.6">${n.date.split(' ')[0]}</small>
-                        <div style="display:flex; gap:12px;">
-                            <i class="fas fa-eye action-icon" onclick="openReadModal(${n.id})" title="Lire"></i>
-                            <i class="fas fa-edit action-icon" onclick="editNote(${n.id})" title="Modifier"></i>
-                            <i class="fas fa-trash action-icon" style="color:#ff7675" onclick="deleteNote(${n.id})" title="Supprimer"></i>
-                        </div>
+                        <small>${n.date.split(' ')[0]}</small>
+                        <i class="fas fa-eye action-icon" onclick="openReadModal(${n.id})"></i>
                     </div>
                 </div>
             `).join('');
@@ -226,27 +184,8 @@
             document.getElementById('readModal').style.display = 'flex';
         }
 
-        function closeReadModal() {
-            document.getElementById('readModal').style.display = 'none';
-        }
+        function closeReadModal() { document.getElementById('readModal').style.display = 'none'; }
 
-        function editNote(id) {
-            const n = notes.find(x => x.id === id);
-            document.getElementById('note-editor').innerHTML = n.content;
-            editId = id;
-            document.getElementById('note-save-btn').innerText = "Mettre à jour";
-            window.scrollTo(0,0);
-        }
-
-        function deleteNote(id) {
-            if(confirm("Supprimer définitivement cette note ?")) {
-                notes = notes.filter(x => x.id !== id);
-                localStorage.setItem('stella_notes', JSON.stringify(notes));
-                renderNotes();
-            }
-        }
-
-        // --- GESTION DE L'AGENDA ---
         function saveTask() {
             const title = document.getElementById('task-title').value;
             const date = document.getElementById('task-date').value;
@@ -259,26 +198,11 @@
 
         function renderTasks() {
             const container = document.getElementById('tasks-container');
-            container.innerHTML = tasks.sort((a,b) => new Date(a.date) - new Date(b.date)).map(t => `
-                <div class="card" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <strong style="color:var(--primary)">${t.title}</strong><br>
-                        <small>${t.date} à ${t.time || '--'}</small>
-                    </div>
-                    <i class="fas fa-check-circle action-icon" onclick="removeTask(${t.id})"></i>
+            container.innerHTML = tasks.map(t => `
+                <div class="card" style="padding:15px; display:flex; justify-content:space-between;">
+                    <div><strong>${t.title}</strong><br><small>${t.date}</small></div>
                 </div>
             `).join('');
-        }
-
-        function removeTask(id) {
-            tasks = tasks.filter(x => x.id !== id);
-            localStorage.setItem('stella_tasks', JSON.stringify(tasks));
-            renderTasks();
-        }
-
-        // Fermeture de la modale en cliquant à l'extérieur
-        window.onclick = function(e) {
-            if (e.target == document.getElementById('readModal')) closeReadModal();
         }
 
         window.onload = () => {
