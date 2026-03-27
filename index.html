@@ -70,7 +70,7 @@
 <body>
 
     <header class="header">
-        <button class="manual-install-btn" onclick="installPWA()"><i class="fas fa-cloud-download-alt"></i></button>
+        <button id="manual-install" class="manual-install-btn" onclick="installPWA()"><i class="fas fa-cloud-download-alt"></i></button>
         <h1 style="color: var(--primary);">STELLA</h1>
         <p style="font-size: 13px;">Accueil - Votre Assistant</p>
         <button class="theme-toggle" onclick="toggleTheme()" id="theme-icon"><i class="fas fa-moon"></i></button>
@@ -116,6 +116,36 @@
     </div>
 
     <script>
+        // --- GESTION DU SERVICE WORKER (HORS LIGNE) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('Stella : Hors-ligne activé.');
+                }).catch(err => console.log('Erreur SW:', err));
+            });
+        }
+
+        // --- GESTION DE L'INSTALLATION ---
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log("Stella est prête pour l'installation.");
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') console.log('Installation acceptée');
+                    deferredPrompt = null; 
+                });
+            } else {
+                alert("Pour installer Stella sur Android :\n1. Cliquez sur les 3 points du navigateur.\n2. Sélectionnez 'Installer l'application'.");
+            }
+        }
+
+        // --- LOGIQUE DE L'APPLICATION ---
         let tasks = JSON.parse(localStorage.getItem('stella_tasks')) || [];
         let notes = JSON.parse(localStorage.getItem('stella_notes')) || [];
         let editingNoteId = null;
@@ -138,12 +168,10 @@
 
         function execCmd(cmd, val = null) { document.execCommand(cmd, false, val); }
 
-        // --- GESTION AGENDA ---
         function saveTask() {
             const title = document.getElementById('task-title').value;
             const date = document.getElementById('task-date').value;
             if(!title || !date) return;
-
             tasks.push({ id: Date.now(), title, date });
             localStorage.setItem('stella_tasks', JSON.stringify(tasks));
             document.getElementById('task-title').value = "";
@@ -155,19 +183,16 @@
             const grid = document.getElementById('tasks-grid');
             grid.innerHTML = tasks.sort((a,b) => new Date(a.date) - new Date(b.date)).map(t => {
                 const dateObj = new Date(t.date);
-                const dateString = dateObj.toLocaleDateString();
-                const timeString = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
                 return `
                 <div class="item-card">
                     <div class="item-body">
                         <strong style="font-size: 17px; color: var(--primary);">${t.title}</strong>
-                        <p style="margin-top: 10px;"><i class="fas fa-calendar-alt"></i> ${dateString}</p>
-                        <p style="color: var(--primary); font-weight: bold;"><i class="fas fa-clock"></i> ${timeString}</p>
+                        <p style="margin-top: 10px;"><i class="fas fa-calendar-alt"></i> ${dateObj.toLocaleDateString()}</p>
+                        <p style="color: var(--primary); font-weight: bold;"><i class="fas fa-clock"></i> ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                     </div>
                     <div class="item-actions">
                         <small style="opacity:0.6">À faire</small>
-                        <i class="fas fa-check-circle action-icon" style="color:#2ecc71" onclick="deleteTask(${t.id})" title="Terminer"></i>
+                        <i class="fas fa-check-circle action-icon" style="color:#2ecc71" onclick="deleteTask(${t.id})"></i>
                     </div>
                 </div>`;
             }).join('');
@@ -179,12 +204,10 @@
             renderTasks();
         }
 
-        // --- GESTION NOTES ---
         function saveNote() {
             const editor = document.getElementById('note-editor');
             const content = editor.innerHTML.trim();
             if(!content || content === '<br>') return;
-
             if(editingNoteId !== null) {
                 notes = notes.map(n => n.id === editingNoteId ? {...n, content, date: new Date().toLocaleDateString()} : n);
                 editingNoteId = null;
@@ -218,8 +241,7 @@
             const n = notes.find(x => x.id === id);
             document.getElementById('note-editor').innerHTML = n.content;
             editingNoteId = id;
-            document.getElementById('note-save-btn').innerText = "Mettre à jour la note";
-            window.scrollTo(0, 50);
+            document.getElementById('note-save-btn').innerText = "Mettre à jour";
         }
 
         function deleteNote(id) {
