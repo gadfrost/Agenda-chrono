@@ -1,24 +1,26 @@
-let deferredPrompt;
+const CACHE_NAME = 'stella-v14'; // Change le chiffre pour forcer une mise à jour
+const ASSETS = [
+    './',
+    './index.html',
+    './manifest.json',
+    './icon.png',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
+];
 
-// On écoute l'événement de Chrome
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    console.log("Stella est prête pour l'installation.");
+// Installation : on télécharge tout dans le téléphone
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(ASSETS);
+        })
+    );
 });
 
-// Action du bouton en haut à gauche
-document.getElementById('manual-install').addEventListener('click', () => {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('Installation acceptée');
-            }
-            deferredPrompt = null; 
-        });
-    } else {
-        // Si Chrome n'a pas encore détecté le manifest, on donne une astuce
-        alert("Pour installer ou mettre à jour : \n1. Cliquez sur les 3 points en haut à droite de Chrome.\n2. Choisissez 'Installer l'application'.");
-    }
+// Récupération : on regarde d'abord dans le téléphone, sinon on va sur internet
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request).then((response) => {
+            return response || fetch(event.request);
+        })
+    );
 });
